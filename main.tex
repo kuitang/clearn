@@ -9,6 +9,7 @@
 \usepackage{babel}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{parskip}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=page,colorlinks=true]
@@ -43,14 +44,27 @@
 
 \title{Expanding Compressed Learning}
 
-
 \author{Kevin Shi and Kui Tang}
 \maketitle
 \begin{abstract}
-Blah
+We examine applications of ideas from compressed sensing to machine learning. One possibility is using the RIP$_2$ property of a measurement matrix as a black box to train a model on $k-$sparse data directly without explicitly performing dimensionality reduction. Another is an idea for a data-dependent hash function using the compressed sensing linear program. Lastly we examine the possibility of constructing an RIP$_2$ matrix explicitly using expander graphs. 
 \end{abstract}
 
 \section{Introduction}
+
+Compressed sensing is based off of two fundamental ideas. The main idea is the construction of a measurement matrix $A$ which satisfies the RIP$_p$-property for parameters $(k,\epsilon)$. vectors. This means that for any $k-$sparse $x$, $(1-\epsilon)\|x\|_p \le\|Ax\|_p \le (1+\epsilon)\|x\|_p$. The classical result is that a random Gaussian matrix satisfies the RIP$_2$ property with high probability. 
+
+The compressed sensing linear program is as follows: given an input measurement $x$ and a measurement matrix $A$, minimize $\|\hat{x}\|_1$ such that $A\hat{x} = x$. Let $y$ be the output of this linear program. If $A$ satisfying the RIP$_2$ property, then the guarantee is that for any $k$-sparse vector $\tilde{x}$, we have $\|y - x\|_2 \le O(1/\sqrt{k}) \|\tilde{x}-x\|_1$. In particular this holds for the best $k-$sparse approximation, that is, $\arg\min_{\tilde{x}} \|\tilde{x}-x\|_1$, so this is a rather strong agnostic learning guarantee. 
+
+\section{Compressed learning}
+
+\section{RIP$_2$ from expander graphs}
+
+The $\ell_2$ norm is the most interesting norm for machine learning applications, because many models are linear models in an appropriate feature space. However the expander graph construction from \citet{Berinde2008} only constructs an RIP$_p$ matrix for $1 \le p < 1+O(1/\log n)$. For the $\ell_2$-norm, there is a lower bound such that for any $A \in \{0,1\}^{m\times n}$ satisfies the RIP$_2$ property, it must be that $m = \Omega(k^2)$. To our knowledge there is no construction matching this lower bound. 
+
+\section{Derandomized data-dependent dimensionality reduction}
+
+Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
 
 \citet{Berinde2008}
 
