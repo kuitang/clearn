@@ -57,20 +57,31 @@ Compressed sensing is based off of two fundamental ideas. The main idea is the c
 The compressed sensing linear program is as follows: given an input measurement $x$ and a measurement matrix $A$, minimize $\|\hat{x}\|_1$ such that $A\hat{x} = x$. Let $y$ be the output of this linear program. If $A$ satisfying the RIP$_2$ property, then the guarantee is that for any $k$-sparse vector $\tilde{x}$, we have $\|y - x\|_2 \le O(1/\sqrt{k}) \|\tilde{x}-x\|_1$. In particular this holds for the best $k-$sparse approximation, that is, $\arg\min_{\tilde{x}} \|\tilde{x}-x\|_1$, so this is a rather strong agnostic learning guarantee. 
 
 \section{Compressed learning}
+\citet{Calderbank09} show it is possible to merge compressive sensing and learning. That is, if our true data are $k$-sparse vectors and we observe compressively-sensed samples and train an SVM directly on these low-dimensional samples, we obtain a model whose generalization error is comparable to that of the best classifier over the true directly on the true data. Their argument first shows that if the measurement matrix $A$ is RIP$_2$, then inner products between convex hulls of $k$-sparse vectors also satisfy a sort of RIP property that also depends on the radius of the data. They then apply this result to compare the \emph{projection} of a classifier learned over the true data points, $A\widehat{w}_S$ to the classifier learned over the compressed samples, $\widehat{w}_{AS}$. In particular, they show that 
+\begin{equation}L_{\mathcal{D}}(A \widehat{w}_S) \leq L_{\mathcal{D}}(\widehat{w}_S) + O(CR^2\epsilon)
+\label{eq:projection-loss-bound}
+\end{equation}
+where $R$ is the radius of the data, $C$ is a regularization constant, and $L_{\mathcal{D}}$ is the empirical regularization loss. This result can be combined with standard results on generalization of SVMs to obtain a bound 
+\begin{equation}
+H_{\mathcal{D}}(\widehat{z}_{AS}) \leq H_{\mathcal{D}}(w_0) + O\left( \sqrt{\left\Vert w_0 \right\Vert^2 \left( R^2 \epsilon + \frac{\log(1/\delta)}{M} \right)} \right)
+\end{equation}
+where $H_\mathcal{D}$ is the empirical hinge loss and $w_0$ is the best classifier in the data domain (full-dimensional space).
+
+We plan to explore extensions of this idea:
+\begin{enumerate}
+\item Expand the RIP property of dot products to nonlinear kernels. Preliminary calculations show a similar property holds for squared-exponential kernels, albeit with a factor of $\exp(-2\epsilon R - \epsilon^2 R)$ for the lower bound and $\exp(2 \epsilon R)$ for the upper bound. Bounds on polynomial kernels also seem possible by analyzing eigenvalues of the Gram matrix.
+\item Generalize compressive learning to other methods, such as kernel generalized linear models (GLMs). This involves showing an RIP property holds for \emph{linear} combinations support vectors. The current work only proves this for convex combinations because they suffice for SVMs, but kernel GLMs use linear combinations of support vectors. This can be done by performing a more careful analysis. We should be able to rely on standard results to show an analogue of~\eqref{eq:projection-loss-bound}: that the \emph{log-likelihoods} of the projected  model $A\widehat{w}_S$ and the model trained on compressed samples $\widehat{w}_{AS}$ are close, because the log-likelihood is linear in the parameters $w$. We will need to explore the literature further to find analogues of the generalization guarantees for SVMs that apply to bounds we can derive here.
+\end{enumerate}
 
 \section{RIP$_2$ from expander graphs}
 
 The $\ell_2$ norm is the most interesting norm for machine learning applications, because many models are linear models in an appropriate feature space. However the expander graph construction from \citet{Berinde2008} only constructs an RIP$_p$ matrix for $1 \le p < 1+O(1/\log n)$. For the $\ell_2$-norm, there is a lower bound such that for any $A \in \{0,1\}^{m\times n}$ satisfies the RIP$_2$ property, it must be that $m = \Omega(k^2)$. To our knowledge there is no construction matching this lower bound. 
 
+One particular application of such an expander graph, should we be able to find one, is to extend the ideas of the previous section to compressive learning with a sparse expander graph as the measurement matrix, rather than a dense complete matrix as presently must be the case. This would give us a learning algorithm requiring fewer arithmetic operations.
+
 \section{Derandomized data-dependent dimensionality reduction}
 
 Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
-
-\citet{Berinde2008}
-
-\citet{Calderbank09}
-
-\citet{Hoory2006}
 
 \bibliographystyle{plainnat}
 \bibliography{biblio}
