@@ -1,0 +1,687 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 501
+\begin_document
+\begin_header
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{pdfsync}
+\usepackage{showlabels}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\st}{s.t.}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Ne}{Ne}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vvec}{vec}
+\DeclareMathOperator{\pa}{pa}
+\DeclareMathOperator{\repmat}{repmat}
+
+\def\ci{\perp\!\!\!\perp}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+natbibapa
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks true
+\pdf_backref page
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection
+Results for New Kernels
+\end_layout
+
+\begin_layout Standard
+To generalize results to new kernels, we prove weakened variants of their
+ Lemmas 4.2 and 4.3 for different kernels.
+ We assume our 
+\begin_inset Formula $A$
+\end_inset
+
+ matrix is 
+\begin_inset Formula $(k,\epsilon)$
+\end_inset
+
+-RIP; that is, for any 
+\begin_inset Formula $k$
+\end_inset
+
+-sparse vector 
+\begin_inset Formula $x\in\mathbb{R}^{n}$
+\end_inset
+
+, we have
+\begin_inset Formula 
+\begin{equation}
+(1-\epsilon)\left\Vert x\right\Vert _{2}\leq\left\Vert Ax\right\Vert _{2}\leq(1+\epsilon)\left\Vert x\right\Vert _{2}\label{eq:RIP}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Squared Exponential Kernels.
+\end_layout
+
+\begin_layout Standard
+The squared exponential kernel has with variance 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ and length scale 
+\begin_inset Formula $\ell$
+\end_inset
+
+ is
+\begin_inset Formula 
+\begin{equation}
+k(x,x')=\sigma^{2}\exp\left(-\frac{\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right)\label{eq:kSE}
+\end{equation}
+
+\end_inset
+
+Plugging 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:kSE"
+
+\end_inset
+
+ into 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:RIP"
+
+\end_inset
+
+ gives us
+\begin_inset Formula 
+\begin{eqnarray*}
+k_{\sigma,\ell}(Ax,Ax') & \geq & \sigma^{2}\exp\left(-\frac{\left\Vert A(x-x')\right\Vert _{2}^{2}}{2\ell^{2}}\right)\\
+ & \geq & \sigma^{2}\exp\left(-\frac{(1+\epsilon)\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right)\\
+ & \geq & k_{\sigma,\ell}(x,x')\exp\left(-2\epsilon R-\epsilon^{2}R\right)
+\end{eqnarray*}
+
+\end_inset
+
+On the other hand,
+\begin_inset Formula 
+\begin{eqnarray*}
+k_{\sigma,\ell}(Ax,Ax') & \leq & \sigma^{2}\exp\left(-(1-\epsilon)^{2}\left\Vert x-x'\right\Vert _{2}^{2}\right)\\
+ & \leq & \sigma^{2}\exp\left(-\left\Vert x-x'\right\Vert _{2}^{2}\right)\exp\left(2\epsilon\left\Vert x-x'\right\Vert _{2}^{2}\right)\exp\left(-\epsilon^{2}\left\Vert x-x'\right\Vert _{2}^{2}\right)\\
+ & \leq & k(x,x')\exp(2\epsilon R)
+\end{eqnarray*}
+
+\end_inset
+
+In summary, we have
+\begin_inset Formula 
+\begin{equation}
+\exp(-2\epsilon R-\epsilon^{2}R)k(x,x')\leq k(Ax,Ax')\leq\exp(2\epsilon R)k(x,x')\label{eq:exp-bound}
+\end{equation}
+
+\end_inset
+
+Unfortunately, the constant factor has increased from 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ to an 
+\begin_inset Formula $\exp(\epsilon)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Matern 
+\begin_inset Formula $3/2$
+\end_inset
+
+ and 
+\begin_inset Formula $5/2$
+\end_inset
+
+ kernels
+\end_layout
+
+\begin_layout Standard
+Matern kernels for half-integral degrees of smoothness have simple algebraic
+ forms.
+ The 
+\begin_inset Formula $v=3/2$
+\end_inset
+
+ kernel is given by
+\begin_inset Formula 
+\[
+k(x)=\sigma^{2}\left(1+\frac{\sqrt{3}\left\Vert x\right\Vert }{\rho}\right)\exp\left(-\frac{\sqrt{3}\left\Vert x\right\Vert }{\rho}\right)
+\]
+
+\end_inset
+
+while the 
+\begin_inset Formula $\rho=5/2$
+\end_inset
+
+ kernel is
+\begin_inset Formula 
+\[
+k(x)=\sigma^{2}\left(1+\frac{\sqrt{5}\left\Vert x\right\Vert }{\rho}+\frac{5\left\Vert x\right\Vert ^{2}}{3\rho^{2}}\right)\exp\left(-\frac{\sqrt{5}\left\Vert x\right\Vert }{\rho}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Rational Quadratic Kernels
+\end_layout
+
+\begin_layout Standard
+The rational quadratic kernel with variance 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+, length-scale 
+\begin_inset Formula $\ell$
+\end_inset
+
+, and degree 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ is
+\begin_inset Formula 
+\[
+k(x)=\sigma^{2}\left(1+\frac{\left\Vert x\right\Vert _{2}^{2}}{2\alpha\ell^{2}}\right)^{-\alpha}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The rational quadratic kernel for two points with difference 
+\begin_inset Formula $x$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Support Vector Regression
+\end_layout
+
+\begin_layout Standard
+CHANGE ALL OF THESE TO 
+\begin_inset Formula $\rho$
+\end_inset
+
+, since we have already used 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+!
+\end_layout
+
+\begin_layout Standard
+We can get the same asymptotic bounds for support vector regression.
+ The loss function for support vector regression is the 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-insensitive (tube) loss, defined as
+\begin_inset Formula 
+\begin{equation}
+T(x,y;w)=\max\left\{ y-w^{\top}x-\epsilon,w^{\top}x-y-\epsilon,0\right\} \label{eq:epsilon-insensitive}
+\end{equation}
+
+\end_inset
+
+The primal problem is
+\begin_inset Formula 
+\begin{alignat*}{1}
+\min & \frac{1}{2}\left\Vert w\right\Vert ^{2}+C\sum_{i}\left(\xi_{i}+\xi_{i}^{*}\right)\\
+\text{s.t.} & \begin{cases}
+y_{i}-w^{\top}x_{i} & \leq\epsilon+\xi_{i}\\
+w^{\top}x_{i}-y & \leq\epsilon+\xi_{i}^{*}
+\end{cases}
+\end{alignat*}
+
+\end_inset
+
+while the dual problem is
+\begin_inset Formula 
+\begin{alignat*}{1}
+\max & -\frac{1}{2}\sum_{ij}\left(\alpha_{i}-\alpha_{i}^{*}\right)\left(\alpha_{j}-\alpha_{j}^{*}\right)x_{i}^{\top}x_{j}-\epsilon\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)+\sum_{i}y_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)\\
+\text{s.t.} & \begin{cases}
+\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right) & =0\\
+\alpha_{i},\alpha_{i}^{*} & \in[0,C]
+\end{cases}
+\end{alignat*}
+
+\end_inset
+
+and the dual (kernel) representation of the weight vector is given by
+\begin_inset Formula 
+\begin{equation}
+w=\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)x_{i}\label{eq:dual-w}
+\end{equation}
+
+\end_inset
+
+Now we need to prove a variant of Theorem 4.4 for the regression problem.
+ This involves a slightly different manipulation to deal with positive and
+ negative terms, but the ideas and results are the same.
+\end_layout
+
+\begin_layout Proposition
+\begin_inset CommandInset label
+LatexCommand label
+name "prop:my-theorem-44"
+
+\end_inset
+
+Let 
+\begin_inset Formula $A_{m\times n}$
+\end_inset
+
+ be a 
+\begin_inset Formula $(2k,\epsilon)$
+\end_inset
+
+ RIP matrix and 
+\begin_inset Formula $\{\gamma_{i}\},\{\delta_{i}\}$
+\end_inset
+
+ be real numbers with 
+\begin_inset Formula $\sum_{i}\left|\gamma_{i}\right|\leq C$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{i}\left|\delta_{i}\right|\leq D$
+\end_inset
+
+ for some 
+\begin_inset Formula $C,D\geq0$
+\end_inset
+
+.
+ Let
+\begin_inset Formula 
+\begin{eqnarray*}
+\bm{\alpha} & = & \sum_{i}\gamma_{i}x_{i}'\\
+\bm{\beta} & = & \sum_{j}\delta_{i}x_{j}'
+\end{eqnarray*}
+
+\end_inset
+
+Then
+\begin_inset Formula 
+\[
+\left|\bm{\beta}^{\top}\bm{\alpha}-\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}\right|\leq3CDR^{2}\epsilon
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Proof
+We write out 
+\begin_inset Formula $\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}$
+\end_inset
+
+, split up into positive and negative terms, and upper bound the quantity.
+ The lower bound is symmetric.
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(A\bm{\beta}\right)^{\top}A\bm{\alpha} & = & \sum_{ij}\gamma_{i}\delta_{i}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ & = & \sum_{ij:\sign(\gamma_{i})=\sign(\delta_{j})}\gamma_{i}\delta_{j}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ &  & -\sum_{ij:\sign(\gamma_{i})\neq\sign(\delta_{j})}\left|\gamma_{i}\right|\left|\delta_{j}\right|\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ & \leq & \sum_{ij:\sign(\gamma_{i})=\sign(\delta_{j})}\gamma_{i}\delta_{j}\left((1-\epsilon)x_{i}^{\top}x_{j}'+2R^{2}\epsilon\right)\\
+ &  & -\sum_{ij:\sign(\gamma_{i})\neq\sign(\delta_{j})}\left|\gamma_{i}\right|\left|\delta_{j}\right|\left((1+\epsilon)x_{i}^{\top}x_{j}'-2R^{2}\epsilon\right)\\
+ & = & \bm{\alpha}^{\top}\bm{\beta}+\sum_{ij}\left|\gamma_{i}\right|\left|\delta_{j}\right|\epsilon\left(2R^{2}-x_{i}^{\top}x_{j}'\right)\\
+ & \leq & \bm{\alpha}^{\top}\bm{\beta}+3R^{2}CD\epsilon
+\end{eqnarray*}
+
+\end_inset
+
+We have used the upper RIP bound for 
+\begin_inset Formula $\gamma_{i}\delta_{j}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)$
+\end_inset
+
+ and the lower bound for the 
+\begin_inset Formula $\left|\gamma_{i}\right|\left|\delta_{j}\right|\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)$
+\end_inset
+
+ term.
+ The last line follows from Schwarz (in 
+\begin_inset Formula $\ell_{1}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Proof
+Now we prove the main result for regression.
+\end_layout
+
+\begin_layout Proposition
+Blah blah blah
+\end_layout
+
+\begin_layout Proof
+Similarly to the classification case, the regularization loss is the sum
+ of the 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-insensitive loss and a quadratic regularizer.
+ The proof for the bound on the quadratic regularizer is the same, and so
+ we have bound for the quadratic regularizer is the exact same.
+ So it remains to show
+\begin_inset Formula 
+\begin{equation}
+T_{{\cal D}}(A\widehat{w}_{S})\leq T_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon)\label{eq:dist-T-bound}
+\end{equation}
+
+\end_inset
+
+We apply our Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:my-theorem-44"
+
+\end_inset
+
+ with an arbitrary test point, e.g.
+ 
+\begin_inset Formula $(x'_{1},y_{1}')=(x',y')$
+\end_inset
+
+ and 
+\begin_inset Formula $N=1$
+\end_inset
+
+, 
+\begin_inset Formula $D=1$
+\end_inset
+
+.
+ We want to prove
+\begin_inset Formula 
+\begin{equation}
+T(Ax',y',A\widehat{w}_{S})\leq T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)\label{eq:pointwise-T-bound}
+\end{equation}
+
+\end_inset
+
+Since 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:pointwise-T-bound"
+
+\end_inset
+
+ applies pointwise, it implies 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:dist-T-bound"
+
+\end_inset
+
+ for any distribution 
+\begin_inset Formula ${\cal D}$
+\end_inset
+
+.
+ Now 
+\begin_inset Formula $T$
+\end_inset
+
+ is defined case-wise, so to prove 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:pointwise-T-bound"
+
+\end_inset
+
+ we need to look at the different cases.
+\end_layout
+
+\begin_layout Proof
+
+\series bold
+\begin_inset Formula $T(Ax',y',A\widehat{w}_{S})$
+\end_inset
+
+ is zero.
+
+\series default
+ This is trivial since 
+\begin_inset Formula $T(x',y'\widehat{w}_{S})$
+\end_inset
+
+ is nonnegative by definition.
+\end_layout
+
+\begin_layout Proof
+
+\series bold
+\begin_inset Formula $T(x',y',\widehat{w}_{S})$
+\end_inset
+
+ is zero.
+
+\series default
+ This implies 
+\begin_inset Formula $y'-\rho<\widehat{w}_{S}^{\top}x'<y'+\rho$
+\end_inset
+
+.
+ Applying the upper bound of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:my-theorem-44"
+
+\end_inset
+
+, we have
+\begin_inset Formula 
+\[
+\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)\leq\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)\leq y'+\rho+O(CR^{2}\epsilon)
+\]
+
+\end_inset
+
+The lower bound gives a symmetric result.
+ Combining them gives us 
+\begin_inset Formula 
+\[
+T(Ax',y',A\widehat{w}_{S})\leq\left|y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)\right|<\rho+O(CR^{2}\epsilon)=T(x',y'\widehat{w_{S}})+O(CR^{2}\epsilon+\rho)
+\]
+
+\end_inset
+
+as desired.
+\end_layout
+
+\begin_layout Proof
+
+\series bold
+\begin_inset Formula $T(Ax',y'A\widehat{w}_{S})=y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $T(x',y',\widehat{w}_{S})=y'-\widehat{w}_{S}^{\top}x'$
+\end_inset
+
+ (or both negated).
+
+\series default
+ These cases are symmetric so we prove just the first.
+ Applying the lower bound of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:my-theorem-44"
+
+\end_inset
+
+ we have
+\begin_inset Formula 
+\[
+T(Ax',y'A\widehat{w}_{S})=y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)\leq y'-\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)=T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon)
+\]
+
+\end_inset
+
+as desired.
+\end_layout
+
+\begin_layout Proof
+
+\series bold
+\begin_inset Formula $T(Ax',y',A\widehat{w}_{S})=y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)$
+\end_inset
+
+ while 
+\begin_inset Formula $T(x',y',\widehat{w}_{S})=\widehat{w}_{S}^{\top}x'-y'$
+\end_inset
+
+ (or both negated).
+
+\series default
+ In this case, we 
+\begin_inset Formula $y'-\widehat{w}_{S}^{\top}x'<0$
+\end_inset
+
+.
+ Applying the lower bound of Proposition 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "prop:my-theorem-44"
+
+\end_inset
+
+, we have
+\begin_inset Formula 
+\[
+\widehat{w}_{S}^{\top}x'-O(CR^{2}\epsilon)\leq\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)
+\]
+
+\end_inset
+
+which implies
+\begin_inset Formula 
+\[
+y'-\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)\geq y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)
+\]
+
+\end_inset
+
+Since 
+\begin_inset Formula $y'-\widehat{w}_{S}^{\top}x'<0$
+\end_inset
+
+ while 
+\begin_inset Formula $T(x',y',\widehat{w}_{S})\geq0$
+\end_inset
+
+, we have
+\begin_inset Formula 
+\[
+y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)<O(CR^{2}\epsilon)\leq T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)
+\]
+
+\end_inset
+
+as desired.
+\end_layout
+
+\end_body
+\end_document
