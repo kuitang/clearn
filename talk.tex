@@ -55,7 +55,7 @@
 
 \usepackage[natbibapa]{apacite}
 
-\title{Expanding Compressed Sensing and learning}
+\title{Expanding Compressed Learning}
 \author{Kevin Shi \and Kui Tang}
 \institute{Columbia University}
 
@@ -220,9 +220,8 @@
         E_{Y}\left[\frac{1}{n}\left\Vert Y-X\widehat{\beta}\right\Vert ^{2}\right] & = & E_{Y}\left[\left\Vert \widehat{\beta}-\beta\right\Vert _{\Sigma}^{2}\right]\\
          & = & E_{Y}\left[\left\Vert \widehat{\beta}-\overline{\beta}\right\Vert _{\Sigma}^{2}\right] + E_{Y}\left[\left\Vert \overline{\beta}-\widehat{\beta}\right\Vert _{\Sigma}^{2}\right]
         \end{eqnarray*}
-        where $\Sigma = \frac{1}{n} X\top X$ and $\widehat{\beta} = E_Y[\widehat{\beta}]$.
+        where $\Sigma = \frac{1}{n} X^\top X$ and $\widehat{\beta} = E_Y[\widehat{\beta}]$ and $\left\Vert x \right\Vert_C = x^\top C x$.
         \item For both linear and ridge ($\ell_2$ regularized) regression, $\widehat{\beta} = \widehat{\beta}(X, Y, \lambda)$  available in closed form.
-        \item Note: For positive semi-definite matrix $C$, $\left\Vert x \right\Vert_C = x^\top C x$.
     \end{itemize}
 \end{frame}
 
