@@ -129,15 +129,25 @@ Given a matrix $\Phi$ and parameters $(k,\epsilon)$, certifying whether $\Phi$ i
 \end{theorem}
 \end{frame}
 
-
 \begin{frame}
-%\includegraphics[width=4in]{rip.jpg}
+\includegraphics[width=4in]{rip.jpg}
 \end{frame}
 
 \begin{frame}
 \frametitle{Bipartite graph model of measurement}	
+\includegraphics[width=3in]{bpgraph.png}
 \end{frame}
 
+\begin{frame}
+\frametitle{Expander graphs}
+
+\begin{definition}[Vertex expansion]
+	Let $G = (A,B,E)$ be a bipartite graph with left degree $d$. G has $(k,\epsilon)$-vertex expansion if for every subset $X \subset A, |X| \le k$, the set of neighbors $N(A) = \{j \in B \, | \, \exists \, i \in X, (i,j) \in E\}$ has size at least $|N(A)| \ge (1-\epsilon)d|X|$.
+\end{definition}
+
+Capture many properties of random graphs, but can be constructed deterministically. 
+
+\end{frame}
 
 \subsection{Review of Berinde et. al. 08}
 \begin{frame}
@@ -162,7 +172,7 @@ Generalize the lower bound in terms of an inequality involving the $\ell_1,\ell_
 
 \end{frame}
 
-
+%
 %\subsection{Nonnegative RIP matrices}
 \begin{frame}
 \frametitle{A more modest question}
