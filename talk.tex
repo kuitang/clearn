@@ -118,16 +118,89 @@
     \frametitle{Attempts to Generalize to Linear Regression}
 \end{frame}
 
-\section{Other matrices (Kevin's section)}
+\section{Explicit RIP Constructions}
 
-\subsection{Overview}
+\subsection{}
 \begin{frame}
-    \frametitle{Overview}
+\frametitle{RIP constructions with $m = \tilde{O}(k)$}
+Draw a random matrix with entries sampled from $\mathcal{N}(0,1/m)$.
+
+Draw a random matrix with entries sampled from $\left\{+\frac{1}{\sqrt{m}}, -\frac{1}{\sqrt{m}}\right\}$ with Bernoulli parameter $0.5$. 
+\end{frame}
+
+\begin{frame}
+\frametitle{But...}
+\begin{theorem}[\cite{Bandeira12}]
+Given a matrix $\Phi$ and parameters $(k,\epsilon)$, certifying whether $\Phi$ is $(k,\epsilon)$-RIP is NP-hard. 
+\end{theorem}
+\end{frame}
+
+\begin{frame}
+\includegraphics[width=4in]{rip.jpg}
+\end{frame}
+
+
+\subsection{Bipartite graph model of measurement}
+\begin{frame}
+\frametitle{Bipartite graph model of measurement}	
+\includegraphics[width=3in]{bpgraph.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Expander graphs}
+
+\begin{definition}[Vertex expansion]
+	Let $G = (A,B,E)$ be a bipartite graph with left degree $d$. G has $(k,\epsilon)$-vertex expansion if for every subset $X \subset A, |X| \le k$, the set of neighbors $N(A) = \{j \in B \, | \, \exists \, i \in X, (i,j) \in E\}$ has size at least $|N(A)| \ge (1-\epsilon)d|X|$.
+\end{definition}
+
+Capture many properties of random graphs, but can be constructed deterministically. 
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Explicit RIP for $\ell_1$-norm}
+    \begin{theorem}[\cite{Berinde2008}]
+    Let $(A,B,E)$ be a bipartite expander graph with left degree $d$ and with $(k,\epsilon)$-vertex expansion. That is, for all $X \subset A, |X| < k$, then $|N(X)| \le (1-\epsilon)d|X|$. Then the scaled adjacency matrix $\dfrac{1}{d^{1/p}}\Phi$ satisfies the $(p,k,\epsilon)-$RIP property
+    
+    \[(1-\epsilon)\|x\|_p^2 \le \|\Phi x\|_p^2 \le (1+\epsilon)\|x\|_p^2\]
+    for all $k$-sparse $x$ and for $p$ close to $1$. 
+	
+    \end{theorem}	
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Extension to $\ell_2$-norm}
+There's a lower bound for the $\ell_2$ norm: a $\{0,1\}$ matrix which satisfies the RIP property must have $m = \Omega(k^2)$. 
+
+Possible way around the lower bound: use multigraphs. $\Phi_{ij} = \#$ of edges between $i$ and $j$. 
+
+Generalize the lower bound in terms of an inequality involving the $\ell_1,\ell_2$ norms of the columns?
+
+\end{frame}
+
+%
+%\subsection{Nonnegative RIP matrices}
+\begin{frame}
+\frametitle{A more modest question}
+Are cancellations in sign necessary for the $\ell_2$ norm?
+
+Can RIP matrices with $m = \tilde{O}(k)$ can be constructed using only nonnegative entries?
+ 
 \end{frame}
 
 \subsection{Poisson Random Matrices}
 \begin{frame}
     \frametitle{Poisson Random Matrices}
+    Given $a,b \sim \text{Pois}(\lambda)$, $\mathbb{E}[ab] = \lambda^2$ and $\mathbb{E}[a^2] = \lambda$.
+    For $\lambda << 1$, this property seems almost as good as $\mathbb{E}[ab] = 0$ for Gaussian random variables. 
+    
+    \begin{Lemma}
+    	
+    Given a matrix $\Phi$ where $\Phi_{ij} \sim \text{Pois}(\lambda)$, we have
+    \[\|x\|_2^2 \le \mathbb{E}\left[\left\|\frac{1}{m\lambda}\Phi x\right\|_2^2\right] \le (1+\lambda k)\|x\|_2^2\]	
+    \end{Lemma}
+
 \end{frame}
 
 \begin{frame}[t,allowframebreaks]{}
