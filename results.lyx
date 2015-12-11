@@ -311,13 +311,13 @@ CHANGE ALL OF THESE TO
 \begin_layout Standard
 We can get the same asymptotic bounds for support vector regression.
  The loss function for support vector regression is the 
-\begin_inset Formula $\epsilon$
+\begin_inset Formula $\rho$
 \end_inset
 
 -insensitive (tube) loss, defined as
 \begin_inset Formula 
 \begin{equation}
-T(x,y;w)=\max\left\{ y-w^{\top}x-\epsilon,w^{\top}x-y-\epsilon,0\right\} \label{eq:epsilon-insensitive}
+T(x,y;w)=\max\left\{ y-w^{\top}x-\rho,w^{\top}x-y-\rho,0\right\} \label{eq:epsilon-insensitive}
 \end{equation}
 
 \end_inset
@@ -327,8 +327,8 @@ The primal problem is
 \begin{alignat*}{1}
 \min & \frac{1}{2}\left\Vert w\right\Vert ^{2}+C\sum_{i}\left(\xi_{i}+\xi_{i}^{*}\right)\\
 \text{s.t.} & \begin{cases}
-y_{i}-w^{\top}x_{i} & \leq\epsilon+\xi_{i}\\
-w^{\top}x_{i}-y & \leq\epsilon+\xi_{i}^{*}
+y_{i}-w^{\top}x_{i} & \leq\rho+\xi_{i}\\
+w^{\top}x_{i}-y & \leq\rho+\xi_{i}^{*}
 \end{cases}
 \end{alignat*}
 
@@ -337,7 +337,7 @@ w^{\top}x_{i}-y & \leq\epsilon+\xi_{i}^{*}
 while the dual problem is
 \begin_inset Formula 
 \begin{alignat*}{1}
-\max & -\frac{1}{2}\sum_{ij}\left(\alpha_{i}-\alpha_{i}^{*}\right)\left(\alpha_{j}-\alpha_{j}^{*}\right)x_{i}^{\top}x_{j}-\epsilon\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)+\sum_{i}y_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)\\
+\max & -\frac{1}{2}\sum_{ij}\left(\alpha_{i}-\alpha_{i}^{*}\right)\left(\alpha_{j}-\alpha_{j}^{*}\right)x_{i}^{\top}x_{j}-\rho\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)+\sum_{i}y_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)\\
 \text{s.t.} & \begin{cases}
 \sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right) & =0\\
 \alpha_{i},\alpha_{i}^{*} & \in[0,C]
@@ -467,7 +467,7 @@ Similarly to the classification case, the regularization loss is the sum
  So it remains to show
 \begin_inset Formula 
 \begin{equation}
-T_{{\cal D}}(A\widehat{w}_{S})\leq T_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon)\label{eq:dist-T-bound}
+T_{{\cal D}}(A\widehat{w}_{S})\leq T_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)\label{eq:dist-T-bound}
 \end{equation}
 
 \end_inset

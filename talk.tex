@@ -5,6 +5,9 @@
 \setbeamertemplate{navigation symbols}{}
 %\renewcommand{\insertnavigation}[1]{}
 
+%\usepackage{syntonly}
+%\syntaxonly
+
 \usepackage{graphicx}
 
 %\usepackage{rotating}
@@ -13,9 +16,15 @@
 \usepackage{algpseudocode}
 \usepackage{xcolor}
 \usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
 
 \makeatletter
 \renewcommand{\ALG@beginalgorithmic}{\scriptsize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage[natbibapa]{apacite}
+\theoremstyle{plain}
 \makeatother
 
 \usepackage{caption}
@@ -71,51 +80,165 @@
 
 \begin{frame}
 \frametitle{Learning Compressively-Sensed Data}
+\begin{figure}
+    \includegraphics[width=\columnwidth]{S_vs_AS.pdf}
+    \caption{\label{fig:S_vs_AS}Sample space $S$ and measurement (compressed) space $AS$.}
+\end{figure}
+\begin{itemize}
+    \item There exist training data ${(x_i,y_i)} \subset \mathbb{R}^n \times {-1,1}$ where the $x_i$ are $k$-sparse, learn binary classifier $f : \mathcal{X} \rightarrow {-1,1}$.
+    \item We observe compressively-sensed measurements ${(Ax_i,y_i)} \subset \mathbb{R}^M \times {-1, 1}$ for a $(2k,\epsilon)$ RIP $m \times n$ matrix $A$.
+    \item Two options
     \begin{itemize}
-        \item There exist training data ${(x_i,y_i)} \subset \mathbb{R}^n \times {-1,1}$ where the $x_i$ are $k$-sparse, learn binary classifier $f : \mathcal{X} \rightarrow {-1,1}$.
-        \item We observe compressively-sensed measurements ${(Ax_i,y_i)} \subset \mathbb{R}^M \times {-1, 1}$ for a $(2k,\epsilon)$ RIP $m \times n$ matrix $A$.
-        \item Two options
-        \begin{itemize}
-            \item Recover $n$-dimensional sparse vectors, learn classifier in the high dimensional space.
-            \item \strong{Learn classifier directly in the compressed space!}
-        \end{itemize}
+        \item Recover $n$-dimensional sparse vectors, learn classifier in the high dimensional space.
+        \item \textbf{Learn classifier directly in the compressed space!}
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Support Vector Machine Review}
-    
+\frametitle{Support Vector Machine Review}
+\begin{itemize}
+    \item We minimize the hinge loss, which on one example is $H(x,y;w) = \max{0, 1 - yw^\top x}$
+    \item The true hinge loss on distribution $\cal D$ is $H_{\cal D}(w) = E_{(x_i,y_i) \sim {\cal D}} [1 - y_i w^\top x_i]$
+    \item The true regularization loss is $L(w) = H_{\cal D}(w) + \frac{1}{2C}\left\Vert w \right\Vert$.
+    \item The trained SVM classifier $\widehat{w}_S$ can be written as $$\widehat{w}_S = \sum_i \alpha_i y_i x_i $$ where $0 \leq \alpha_i \leq C/M$ and $\left\Vert \widehat{w}_S \right\Vert \leq C$.
+    \item If $w^*$ is the best SVM classifier over $\cal D$, then with probability $1 - \delta$, we have \citep{Sridharan08} $$L_{\cal D}(\widehat{w}_S) \leq L_{\cal D}(w^*) + O\left(C \log \frac{1}{\delta} / M\right)$$
+\end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Compressed Learning Bound}
-    $$L_{\cal D}(\widehat{z}_{AS}) \leq L_{\cal D}(w^*) + O(CR^2\epsilon + C\log\frac{1}{\delta} / M)  $$
+    Main result is
+    \[
+    L_{\cal D}(\widehat{z}_{AS}) \leq L_{\cal D}(w^*) + O(CR^2\epsilon + C\log\frac{1}{\delta} / M)
+    \]
     \begin{figure}
         \includegraphics[width=\columnwidth]{bounds_argument_figure.pdf}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-    \frametitle{RIP for Dot Products}
+\frametitle{RIP for Dot Products}
+\begin{theorem}[\citet{Calderbank09}]
+    \label{theorem:kernel} Let $A_{m\times n}$ be $(2k,\epsilon)$-RIP,
+    $x,x'$ two $k$-sparse vectors in $\mathbb{R}^{n}$ with $\left\Vert x\right\Vert ,\left\Vert x\right\Vert \leq R$.
+    Then
+    \[
+        (1+\epsilon)x^{\top}x'-2R^{2}\epsilon\leq\left(Ax\right)^{\top}\left(Ax'\right)\leq(1-\epsilon)x^{\top}x'+2R^{2}\epsilon
+    \]
+\end{theorem}
+\end{frame}
+
+\begin{frame}
+\frametitle{Applying Dot-RIP to SVM Loss}
+\begin{itemize}
+    \item Suppose we train a classifier $\widehat{w}_S$ in the high-dimensional space.
+    \item Project to low dimensional space, getting classifier $A\widehat{w}_S$.
+    \item A key result is to show that projection does not increase the loss too much:
+        \[
+            L_{\cal D}(A\widehat{w}_S) \leq L_{\cal D}(\widehat{w}_S) + O(CR^2\epsilon) \label{eq:loss-bound}
+    \]
+    \item $L$ contains terms of the form $y_iw_i^\top x_i$ and $\Vert w \Vert$.
+    \item Use kernel representation $$\widehat{w}_S = \sum_i \alpha_i y_i x_i $$ to write~\eqref{eq:loss-bound} in terms of $(A\widehat{w}_S)^\top (Ax)$ and $\widehat{w}_S^\top x$, and use Theorem~\label{theorem:kernel} to get result.
+    \item Technical issues with signs and cases... tedious but it works out.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Putting it Together}
+    $$L_{\cal D}(\widehat{z}_{AS}) \leq L_{\cal D}(w^*) + O(CR^2\epsilon + C\log\frac{1}{\delta} / M)  $$
+    \begin{figure}
+        \includegraphics[width=\columnwidth]{bounds_argument_figure.pdf}
+    \end{figure}
 \end{frame}
 
 \subsection{Extension to Regression}
 
 \begin{frame}
-    \frametitle{Support Vector Regression}
+\frametitle{Support Vector Regression}
+\begin{itemize}
+    \item We have continuous $y$ and use the $\rho$-insensitive \emph{tube loss}
+    \[
+    T(x,y;w)=\max\left\{ y-w^{\top}x-\rho,w^{\top}x-y-\rho,0\right\} \label{eq:epsilon-insensitive}
+    \]
+    \item The dual (kernel) representation of the learned classifier is
+    \[
+    w=\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)x_{i}\label{eq:dual-w}
+    \]
+\item (Almost) the same projection bound holds! Need another term in $\rho$:
+    \[
+    T_{{\cal D}}(A\widehat{w}_{S})\leq T_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon + \rho)\label{eq:dist-T-bound}
+    \]
+\end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Compressed Learning for Support Vector Machines}
+    \begin{itemize}
+        \item The loss function has 3 cases
+        \[
+        T(x,y;w)=\begin{cases}
+        y-w^{\top}x-\rho & (+)\quad y-w^{\top}x-\rho>0\\
+        w^{\top}x-y-\rho & (-)\quad w^{\top}x-y-\rho>0\\
+        0 & (0)\quad\left|y-w^{\top}x\right|\leq\rho
+        \end{cases}
+        \]
+        \item The difference $T_{{\cal D}}(A\widehat{w}_{S}) - T_{{\cal D}}(\widehat{w}_{S})$ needs to be evaluated for 9 cases (some trivial).
+        \item Supporting lemmas also need to be upgraded to handle negative cases.
+    \end{itemize}
 \end{frame}
 
 \subsection{Other Attempted Generalizations}
 
 \begin{frame}
     \frametitle{Attempts to Generalize to other Kernels}
+    \begin{itemize}
+        \item Recall the RIP for linear kernels:
+        \[
+        (1+\epsilon)x^{\top}x'-2R^{2}\epsilon\leq\left(Ax\right)^{\top}\left(Ax'\right)\leq(1-\epsilon)x^{\top}x'+2R^{2}\epsilon
+        \]
+        \item The squared exponential kernel has with variance $\sigma^{2}$ and length scale $\ell$ is
+        \begin{equation}
+        k(x,x')=\sigma^{2}\exp\left(-\frac{\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right)\label{eq:kSE}
+        \end{equation}
+        \item We have obtained
+        \begin{equation}
+        \exp(-2\epsilon R-\epsilon^{2}R)k(x,x')\leq k(Ax,Ax')\leq\exp(2\epsilon R)k(x,x')\label{eq:exp-bound}
+        \end{equation}
+        \item Both the $(1\pm\epsilon)$ and $2R^2\epsilon$ terms are exponentiated.
+        \item Tried Matern and rational quadratic kernels... no luck.
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Attempts to Generalize to Linear Regression}
+    \begin{itemize}
+        \item Classical analysis: suppose $Y = X\beta + \epsilon$ where $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$.
+        \item $Y$ random, $X$ and $\beta$ fixed.
+        \item The measure of generalization error is \emph{risk}, e.g. expected squared error under the true distribution:
+        \begin{eqnarray*}
+        E_{Y}\left[\frac{1}{n}\left\Vert Y-X\widehat{\beta}\right\Vert ^{2}\right] & = & E_{Y}\left[\left\Vert \widehat{\beta}-\beta\right\Vert _{\Sigma}^{2}\right]\\
+         & = & E_{Y}\left[\left\Vert \widehat{\beta}-\overline{\beta}\right\Vert _{\Sigma}^{2}\right] + E_{Y}\left[\left\Vert \overline{\beta}-\widehat{\beta}\right\Vert _{\Sigma}^{2}\right]
+        \end{eqnarray*}
+        where $\Sigma = \frac{1}{n} X\top X$ and $\widehat{\beta} = E_Y[\widehat{\beta}]$.
+        \item For both linear and ridge ($\ell_2$ regularized) regression, $\widehat{\beta} = \widehat{\beta}(X, Y, \lambda)$  available in closed form.
+        \item Note: For positive semi-definite matrix $C$, $\left\Vert x \right\Vert_C = x^\top C x$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem with Linear Regression}
+\begin{itemize}
+    \item Again, let's compute the risk of the projected model $A\widehat{\beta}_{AS}$.
+    \item The \emph{variance} of the this estimator is
+\[
+E\left[\left\Vert A\widehat{\beta}_{S}-A\overline{\beta}_{S}\right\Vert _{A\Sigma A^{\top}}^{2}\right]=E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{A^{\top}A\Sigma A^{\top}A}^{2}\right]
+\]
+    \item The term $E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{\Sigma}^{2}\right]$ is the variance of the estimator in the high-dimensional space $\widehat{\beta}_S$.
+    \item The norm $\left\Vert x \right\Vert_{A^\top A \Sigma A^\top A}$ contains the factor $A^\top Ax$.
+    \item But RIP doesn't apply here because $Ax$ is no longer sparse, and $A^\top$ does not have interesting properties.
+    \item \textbf{Or am I missing something here?}
+\end{itemize}
 \end{frame}
 
 \section{Explicit RIP Constructions}

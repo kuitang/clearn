@@ -1,0 +1,247 @@
+%% LyX 2.2.0alpha1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
+\usepackage{color}
+\usepackage{babel}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=page,colorlinks=true]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\usepackage[natbibapa]{apacite}
+\theoremstyle{plain}
+\newtheorem{thm}{\protect\theoremname}
+  \theoremstyle{plain}
+  \newtheorem{prop}[thm]{\protect\propositionname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{pdfsync}
+\usepackage{showlabels}
+
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\st}{s.t.}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Ne}{Ne}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\vvec}{vec}
+\DeclareMathOperator{\pa}{pa}
+\DeclareMathOperator{\repmat}{repmat}
+
+\def\ci{\perp\!\!\!\perp}
+
+\makeatother
+
+  \providecommand{\propositionname}{Proposition}
+\providecommand{\theoremname}{Theorem}
+
+\begin{document}
+
+\subsection{Results for New Kernels}
+
+To generalize results to new kernels, we prove weakened variants of
+their Lemmas 4.2 and 4.3 for different kernels. We assume our $A$
+matrix is $(k,\epsilon)$-RIP; that is, for any $k$-sparse vector
+$x\in\mathbb{R}^{n}$, we have
+\begin{equation}
+(1-\epsilon)\left\Vert x\right\Vert _{2}\leq\left\Vert Ax\right\Vert _{2}\leq(1+\epsilon)\left\Vert x\right\Vert _{2}\label{eq:RIP}
+\end{equation}
+
+
+\subsubsection{Squared Exponential Kernels.}
+
+The squared exponential kernel has with variance $\sigma^{2}$ and
+length scale $\ell$ is
+\begin{equation}
+k(x,x')=\sigma^{2}\exp\left(-\frac{\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right)\label{eq:kSE}
+\end{equation}
+Plugging (\ref{eq:kSE}) into (\ref{eq:RIP}) gives us
+\begin{eqnarray*}
+k_{\sigma,\ell}(Ax,Ax') & \geq & \sigma^{2}\exp\left(-\frac{\left\Vert A(x-x')\right\Vert _{2}^{2}}{2\ell^{2}}\right)\\
+ & \geq & \sigma^{2}\exp\left(-\frac{(1+\epsilon)\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right)\\
+ & \geq & k_{\sigma,\ell}(x,x')\exp\left(-2\epsilon R-\epsilon^{2}R\right)
+\end{eqnarray*}
+On the other hand,
+\begin{eqnarray*}
+k_{\sigma,\ell}(Ax,Ax') & \leq & \sigma^{2}\exp\left(-(1-\epsilon)^{2}\left\Vert x-x'\right\Vert _{2}^{2}\right)\\
+ & \leq & \sigma^{2}\exp\left(-\left\Vert x-x'\right\Vert _{2}^{2}\right)\exp\left(2\epsilon\left\Vert x-x'\right\Vert _{2}^{2}\right)\exp\left(-\epsilon^{2}\left\Vert x-x'\right\Vert _{2}^{2}\right)\\
+ & \leq & k(x,x')\exp(2\epsilon R)
+\end{eqnarray*}
+In summary, we have
+\begin{equation}
+\exp(-2\epsilon R-\epsilon^{2}R)k(x,x')\leq k(Ax,Ax')\leq\exp(2\epsilon R)k(x,x')\label{eq:exp-bound}
+\end{equation}
+Unfortunately, the constant factor has increased from $\epsilon$
+to an $\exp(\epsilon)$.
+
+\subsubsection{Matern $3/2$ and $5/2$ kernels}
+
+Matern kernels for half-integral degrees of smoothness have simple
+algebraic forms. The $v=3/2$ kernel is given by
+\[
+k(x)=\sigma^{2}\left(1+\frac{\sqrt{3}\left\Vert x\right\Vert }{\rho}\right)\exp\left(-\frac{\sqrt{3}\left\Vert x\right\Vert }{\rho}\right)
+\]
+while the $\rho=5/2$ kernel is
+\[
+k(x)=\sigma^{2}\left(1+\frac{\sqrt{5}\left\Vert x\right\Vert }{\rho}+\frac{5\left\Vert x\right\Vert ^{2}}{3\rho^{2}}\right)\exp\left(-\frac{\sqrt{5}\left\Vert x\right\Vert }{\rho}\right)
+\]
+
+
+\subsubsection{Rational Quadratic Kernels}
+
+The rational quadratic kernel with variance $\sigma^{2}$, length-scale
+$\ell$, and degree $\alpha$ is
+\[
+k(x)=\sigma^{2}\left(1+\frac{\left\Vert x\right\Vert _{2}^{2}}{2\alpha\ell^{2}}\right)^{-\alpha}
+\]
+
+The rational quadratic kernel for two points with difference $x$
+
+\subsection{Support Vector Regression}
+
+CHANGE ALL OF THESE TO $\rho$, since we have already used $\epsilon$!
+
+We can get the same asymptotic bounds for support vector regression.
+The loss function for support vector regression is the $\rho$-insensitive
+(tube) loss, defined as
+\begin{equation}
+T(x,y;w)=\max\left\{ y-w^{\top}x-\rho,w^{\top}x-y-\rho,0\right\} \label{eq:epsilon-insensitive}
+\end{equation}
+The primal problem is
+\begin{alignat*}{1}
+\min & \frac{1}{2}\left\Vert w\right\Vert ^{2}+C\sum_{i}\left(\xi_{i}+\xi_{i}^{*}\right)\\
+\text{s.t.} & \begin{cases}
+y_{i}-w^{\top}x_{i} & \leq\rho+\xi_{i}\\
+w^{\top}x_{i}-y & \leq\rho+\xi_{i}^{*}
+\end{cases}
+\end{alignat*}
+while the dual problem is
+\begin{alignat*}{1}
+\max & -\frac{1}{2}\sum_{ij}\left(\alpha_{i}-\alpha_{i}^{*}\right)\left(\alpha_{j}-\alpha_{j}^{*}\right)x_{i}^{\top}x_{j}-\rho\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)+\sum_{i}y_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)\\
+\text{s.t.} & \begin{cases}
+\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right) & =0\\
+\alpha_{i},\alpha_{i}^{*} & \in[0,C]
+\end{cases}
+\end{alignat*}
+and the dual (kernel) representation of the weight vector is given
+by
+\begin{equation}
+w=\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)x_{i}\label{eq:dual-w}
+\end{equation}
+Now we need to prove a variant of Theorem 4.4 for the regression problem.
+This involves a slightly different manipulation to deal with positive
+and negative terms, but the ideas and results are the same.
+\begin{prop}
+\label{prop:my-theorem-44}Let $A_{m\times n}$ be a $(2k,\epsilon)$
+RIP matrix and $\{\gamma_{i}\},\{\delta_{i}\}$ be real numbers with
+$\sum_{i}\left|\gamma_{i}\right|\leq C$ and $\sum_{i}\left|\delta_{i}\right|\leq D$
+for some $C,D\geq0$. Let
+\begin{eqnarray*}
+\bm{\alpha} & = & \sum_{i}\gamma_{i}x_{i}'\\
+\bm{\beta} & = & \sum_{j}\delta_{i}x_{j}'
+\end{eqnarray*}
+Then
+\[
+\left|\bm{\beta}^{\top}\bm{\alpha}-\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}\right|\leq3CDR^{2}\epsilon
+\]
+\end{prop}
+\begin{proof}
+We write out $\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}$, split
+up into positive and negative terms, and upper bound the quantity.
+The lower bound is symmetric.
+\begin{eqnarray*}
+\left(A\bm{\beta}\right)^{\top}A\bm{\alpha} & = & \sum_{ij}\gamma_{i}\delta_{i}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ & = & \sum_{ij:\sign(\gamma_{i})=\sign(\delta_{j})}\gamma_{i}\delta_{j}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ &  & -\sum_{ij:\sign(\gamma_{i})\neq\sign(\delta_{j})}\left|\gamma_{i}\right|\left|\delta_{j}\right|\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ & \leq & \sum_{ij:\sign(\gamma_{i})=\sign(\delta_{j})}\gamma_{i}\delta_{j}\left((1-\epsilon)x_{i}^{\top}x_{j}'+2R^{2}\epsilon\right)\\
+ &  & -\sum_{ij:\sign(\gamma_{i})\neq\sign(\delta_{j})}\left|\gamma_{i}\right|\left|\delta_{j}\right|\left((1+\epsilon)x_{i}^{\top}x_{j}'-2R^{2}\epsilon\right)\\
+ & = & \bm{\alpha}^{\top}\bm{\beta}+\sum_{ij}\left|\gamma_{i}\right|\left|\delta_{j}\right|\epsilon\left(2R^{2}-x_{i}^{\top}x_{j}'\right)\\
+ & \leq & \bm{\alpha}^{\top}\bm{\beta}+3R^{2}CD\epsilon
+\end{eqnarray*}
+We have used the upper RIP bound for $\gamma_{i}\delta_{j}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)$
+and the lower bound for the $\left|\gamma_{i}\right|\left|\delta_{j}\right|\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)$
+term. The last line follows from Schwarz (in $\ell_{1}$).
+
+Now we prove the main result for regression.
+\end{proof}
+\begin{prop}
+Blah blah blah
+\end{prop}
+\begin{proof}
+Similarly to the classification case, the regularization loss is the
+sum of the $\epsilon$-insensitive loss and a quadratic regularizer.
+The proof for the bound on the quadratic regularizer is the same,
+and so we have bound for the quadratic regularizer is the exact same.
+So it remains to show
+\begin{equation}
+T_{{\cal D}}(A\widehat{w}_{S})\leq T_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon)\label{eq:dist-T-bound}
+\end{equation}
+We apply our Proposition \ref{prop:my-theorem-44} with an arbitrary
+test point, e.g. $(x'_{1},y_{1}')=(x',y')$ and $N=1$, $D=1$. We
+want to prove
+\begin{equation}
+T(Ax',y',A\widehat{w}_{S})\leq T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)\label{eq:pointwise-T-bound}
+\end{equation}
+Since (\ref{eq:pointwise-T-bound}) applies pointwise, it implies
+(\ref{eq:dist-T-bound}) for any distribution ${\cal D}$. Now $T$
+is defined case-wise, so to prove (\ref{eq:pointwise-T-bound}) we
+need to look at the different cases.
+
+\textbf{$T(Ax',y',A\widehat{w}_{S})$ is zero.} This is trivial since
+$T(x',y'\widehat{w}_{S})$ is nonnegative by definition.
+
+\textbf{$T(x',y',\widehat{w}_{S})$ is zero.} This implies $y'-\rho<\widehat{w}_{S}^{\top}x'<y'+\rho$.
+Applying the upper bound of Proposition \ref{prop:my-theorem-44},
+we have
+\[
+\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)\leq\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)\leq y'+\rho+O(CR^{2}\epsilon)
+\]
+The lower bound gives a symmetric result. Combining them gives us
+\[
+T(Ax',y',A\widehat{w}_{S})\leq\left|y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)\right|<\rho+O(CR^{2}\epsilon)=T(x',y'\widehat{w_{S}})+O(CR^{2}\epsilon+\rho)
+\]
+as desired.
+
+\textbf{$T(Ax',y'A\widehat{w}_{S})=y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)$
+and $T(x',y',\widehat{w}_{S})=y'-\widehat{w}_{S}^{\top}x'$ (or both
+negated).} These cases are symmetric so we prove just the first. Applying
+the lower bound of Proposition \ref{prop:my-theorem-44} we have
+\[
+T(Ax',y'A\widehat{w}_{S})=y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)\leq y'-\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)=T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon)
+\]
+as desired.
+
+\textbf{$T(Ax',y',A\widehat{w}_{S})=y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)$
+while $T(x',y',\widehat{w}_{S})=\widehat{w}_{S}^{\top}x'-y'$ (or
+both negated).} In this case, we $y'-\widehat{w}_{S}^{\top}x'<0$.
+Applying the lower bound of Proposition \ref{prop:my-theorem-44},
+we have
+\[
+\widehat{w}_{S}^{\top}x'-O(CR^{2}\epsilon)\leq\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)
+\]
+which implies
+\[
+y'-\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)\geq y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)
+\]
+Since $y'-\widehat{w}_{S}^{\top}x'<0$ while $T(x',y',\widehat{w}_{S})\geq0$,
+we have
+\[
+y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)<O(CR^{2}\epsilon)\leq T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)
+\]
+as desired.
+\end{proof}
+
+\end{document}
