@@ -70,14 +70,20 @@
 \subsection{Review of Calderblank et. al. 09}
 
 \begin{frame}
-    \frametitle{Learning Sparse High Dimensional Data}
+\frametitle{Learning Compressively-Sensed Data}
     \begin{itemize}
-        \item \citet{Calderbank09}
-    \end{itemize}
+        \item There exist training data ${(x_i,y_i)} \subset \mathbb{R}^n \times {-1,1}$ where the $x_i$ are $k$-sparse, learn binary classifier $f : \mathcal{X} \rightarrow {-1,1}$.
+        \item We observe compressively-sensed measurements ${(Ax_i,y_i)} \subset \mathbb{R}^M \times {-1, 1}$ for a $(2k,\epsilon)$ RIP $m \times n$ matrix $A$.
+        \item Two options
+        \begin{itemize}
+            \item Recover $n$-dimensional sparse vectors, learn classifier in the high dimensional space.
+            \item \strong{Learn classifier directly in the compressed space!}
+        \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Support Vector Machine Review}
+    
 \end{frame}
 
 \begin{frame}
