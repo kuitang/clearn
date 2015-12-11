@@ -246,9 +246,20 @@ E\left[\left\Vert A\widehat{\beta}_{S}-A\overline{\beta}_{S}\right\Vert _{A\Sigm
 \subsection{}
 \begin{frame}
 \frametitle{RIP constructions with $m = \tilde{O}(k)$}
-Draw a random matrix with entries sampled from $\mathcal{N}(0,1/m)$.
 
-Draw a random matrix with entries sampled from $\left\{+\frac{1}{\sqrt{m}}, -\frac{1}{\sqrt{m}}\right\}$ with Bernoulli parameter $0.5$. 
+\begin{itemize}
+\item Draw a random matrix with entries sampled from $\mathcal{N}(0,1/m)$.
+
+\item Draw a random matrix with entries sampled from $\left\{+\frac{1}{\sqrt{m}}, -\frac{1}{\sqrt{m}}\right\}$ with Bernoulli parameter $0.5$. 
+\end{itemize}
+\begin{theorem}
+	With high probability the random matrix $\Phi$ sampled from either distribution above satisfies 
+	
+	\[(1-\epsilon)\|x\|_2^2 \le \|\Phi x\|_2^2 \le (1+\epsilon)\|x\|_2^2\]
+	
+	for all $k$-sparse $x$.
+\end{theorem}
+
 \end{frame}
 
 \begin{frame}
@@ -271,12 +282,14 @@ Given a matrix $\Phi$ and parameters $(k,\epsilon)$, certifying whether $\Phi$ i
 
 \begin{frame}
 \frametitle{Expander graphs}
+\begin{itemize}
+	\item Expander graphs capture many properties of random graphs, but can be constructed deterministically. 
+	\item Expander graphs can also be constructed probabilistically, and the graph expansion property can be certified. 
+\end{itemize}
 
 \begin{definition}[Vertex expansion]
 	Let $G = (A,B,E)$ be a bipartite graph with left degree $d$. G has $(k,\epsilon)$-vertex expansion if for every subset $X \subset A, |X| \le k$, the set of neighbors $N(A) = \{j \in B \, | \, \exists \, i \in X, (i,j) \in E\}$ has size at least $|N(A)| \ge (1-\epsilon)d|X|$.
 \end{definition}
-
-Capture many properties of random graphs, but can be constructed deterministically. 
 
 \end{frame}
 
@@ -290,39 +303,61 @@ Capture many properties of random graphs, but can be constructed deterministical
 	
     \end{theorem}	
 
+The paper goes on to show this RIP$-1$ property gives the same sparse recovery bound for basis pursuit but with the $\ell_1$ norm of the error vector instead of the $\ell_2$ norm. 
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Extension to $\ell_2$-norm}
-There's a lower bound for the $\ell_2$ norm: a $\{0,1\}$ matrix which satisfies the RIP property must have $m = \Omega(k^2)$. 
+\begin{theorem} [Chandar 08]
+	A matrix $\Phi \in \{0,1\}^{m\times n}$ which satisfies the $(2,k,\epsilon)$-RIP property must have $m = \Omega(k^2)$.
+\end{theorem}
 
-Possible way around the lower bound: use multigraphs. $\Phi_{ij} = \#$ of edges between $i$ and $j$. 
-
-Generalize the lower bound in terms of an inequality involving the $\ell_1,\ell_2$ norms of the columns?
-
+\begin{itemize}
+	\item The technique of Berinde doesn't work directly.
+	\item Possible way around the lower bound: use multigraphs. $\Phi_{ij} = \#$ of edges between $i$ and $j$. 
+\end{itemize}
 \end{frame}
 
+\begin{frame}
+\frametitle{Possible generalization of lower bound?}
+\begin{itemize}
+\item The lower bound uses some techniques very specific to the $\{0,1\}$ assumption.
+\item Want to see if more entries helps, such as using $\{0,\cdots,d\}$ in the case of a degree$-d$ multigraph. 
+\item Tried to get a lower bound in terms of the ratio of $\ell_1$ to $\ell_2$ norms of the columns, which should be smaller when larger entries are used... no luck. 
+\item Found out about the Bernoulli$\left(\left\{-\frac{1}{\sqrt{m}},+\frac{1}{\sqrt{m}}\right\}\right)$ construction of JL, which has an even worse $\ell_1$ to $\ell_2$ ratio on the columns.
+\end{itemize}
+\end{frame}
 %
 %\subsection{Nonnegative RIP matrices}
 \begin{frame}
 \frametitle{A more modest question}
-Are cancellations in sign necessary for the $\ell_2$ norm?
+Let's ignore derandomization for a moment.
+\begin{itemize}
+\item Are cancellations in sign necessary for the $\ell_2$ norm?
 
-Can RIP matrices with $m = \tilde{O}(k)$ can be constructed using only nonnegative entries?
+\item Can RIP matrices with $m = \tilde{O}(k)$ can be constructed using only nonnegative entries?
+\end{itemize}
  
 \end{frame}
 
 \subsection{Poisson Random Matrices}
 \begin{frame}
     \frametitle{Poisson Random Matrices}
-    Given $a,b \sim \text{Pois}(\lambda)$, $\mathbb{E}[ab] = \lambda^2$ and $\mathbb{E}[a^2] = \lambda$.
-    For $\lambda << 1$, this property seems almost as good as $\mathbb{E}[ab] = 0$ for Gaussian random variables. 
-    
+	\begin{itemize}
+	\item Given $a,b \stackrel{i.i.d.}{\sim} \text{Pois}(\lambda)$, $\mathbb{E}[ab] = \lambda^2$ and $\mathbb{E}[a^2] = \lambda + \lambda^2$.
+	\item For $\lambda << 1$, this property seems almost as good as $\mathbb{E}[ab] = 0$ for Gaussian random variables. 
+	\end{itemize}
     \begin{Lemma}
     	
-    Given a matrix $\Phi$ where $\Phi_{ij} \sim \text{Pois}(\lambda)$, we have
+    Given a matrix $\Phi \in \mathbb{Z}_{\ge 0}^{m\times n}$ where $\Phi_{ij} \sim \text{Pois}(\lambda)$, for $k$-sparse $x$
     \[\|x\|_2^2 \le \mathbb{E}\left[\left\|\frac{1}{m\lambda}\Phi x\right\|_2^2\right] \le (1+\lambda k)\|x\|_2^2\]	
     \end{Lemma}
+    
+    \begin{itemize}
+	\item Doesn't quite work for the full JL statement - need the $k$-sparsity or else $\lambda$ has to be inversely proportional to the raw signal dimension $n$. 
+	\item Concentration bounds being worked out...
+    \end{itemize}
 
 \end{frame}
 
