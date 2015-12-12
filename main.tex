@@ -1,5 +1,3 @@
-%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
 \documentclass[english]{article}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
@@ -47,14 +45,32 @@
 \author{Kevin Shi and Kui Tang}
 \maketitle
 \begin{abstract}
-We examine applications of ideas from compressed sensing to machine learning. One possibility is using the RIP$_2$ property of a measurement matrix as a black box to train a model on $k-$sparse data directly without explicitly performing dimensionality reduction. Another is an idea for a data-dependent hash function using the compressed sensing linear program. Lastly we examine the possibility of constructing an RIP$_2$ matrix explicitly using expander graphs. 
+Compressed sensing can offer fast and simple techniques for machine learning in high dimensional space. Recently, \citet{Calderbank09} have shown that the RIP$_2$ property of a measurement matrix allows us to train linear support vector machines on compressed measurements directly, rather than recovering a high dimensional sparse vector and working in that space.
+They bound the difference of the error of a classifier trained on low-dimensional samples vs. the error of the best classifier on the high-dimensional space by a factor that depends on the data radius, regularization, and the RIP $\epsilon$ parameter.
+We show that nearly the same bounds hold for support vector regression (i.e. continuous labels), and for nonlinear models using the squared exponential kernel, though by an exponential factor.
+Next we explore a new nonnegative randomized RIP construction using Poisson random variables.
+This offers an alternative to the standard Gaussian and Bernoulli RIP matrices, and may be step in the direction towards constructing expander graph RIP matrices.
 \end{abstract}
 
 \section{Introduction}
 
-Compressed sensing is based off of two fundamental ideas. The main idea is the construction of a measurement matrix $A$ which satisfies the RIP$_p$-property for parameters $(k,\epsilon)$. vectors. This means that for any $k-$sparse $x$, $(1-\epsilon)\|x\|_p \le\|Ax\|_p \le (1+\epsilon)\|x\|_p$. The classical result is that a random Gaussian matrix satisfies the RIP$_2$ property with high probability. 
+Compressed sensing is based off of two fundamental ideas.
+First is constructing an $m \times n$ \emph{measurement matrix} $A$ which satisfies $\emph{restricted isometry property}$ in $L_p$ with parameters $(k,\epsilon)$, abbreviated $\mbox{RIP}_p(k,\epsilon)$.
+This means that for any $k-$sparse $x$, $$(1-\epsilon)\|x\|_p \le\|Ax\|_p \le (1+\epsilon)\|x\|_p.$$
+Well-known examples are matrices whose entries are Gaussian $\mathcal{N}(0,\sigma=1/\sqrt{m})$ and ones whose entries are Bernoulli $U(-1/\sqrt{m},1/\sqrt{m})$~\citep{Baraniuk08}.
+But these classical constructions have a caveat: being random matrices, the RIP only holds with high probability.
+An open question whether we can deterministically construct measurement matrices with RIP.
 
-The compressed sensing linear program is as follows: given an input measurement $x$ and a measurement matrix $A$, minimize $\|\hat{x}\|_1$ such that $A\hat{x} = x$. Let $y$ be the output of this linear program. If $A$ satisfying the RIP$_2$ property, then the guarantee is that for any $k$-sparse vector $\tilde{x}$, we have $\|y - x\|_2 \le O(1/\sqrt{k}) \|\tilde{x}-x\|_1$. In particular this holds for the best $k-$sparse approximation, that is, $\arg\min_{\tilde{x}} \|\tilde{x}-x\|_1$, so this is a rather strong agnostic learning guarantee. 
+The next idea is the compressed sensing linear program~\citep{Candes06}.
+Given an input measurement $x$ and a measurement matrix $A$, we seek the solution to
+\begin{alignat*}{1}
+\min & \left\Vert \widehat{x}\right\Vert _{1}\\
+\text{s.t.} & A\widehat{x}=x
+\end{alignat*}
+Let $y$ be the output of this linear program.
+If $A$ satisfying the RIP$_2$ property, then the guarantee is that for any $k$-sparse vector $\tilde{x}$, we have $\|y - x\|_2 \le O(1/\sqrt{k}) \|\tilde{x}-x\|_1$.
+In particular this holds for the best $k-$sparse approximation, that is, $\arg\min_{\tilde{x}} \|\tilde{x}-x\|_1$, so this is a rather strong agnostic learning guarantee.
+Naturally, we may ask whether the RIP can help use solve learning problems beyond that of $L_1$ signal recovery.
 
 \section{Compressed learning}
 \citet{Calderbank09} show it is possible to merge compressive sensing and learning. That is, if our true data are $k$-sparse vectors and we observe compressively-sensed samples and train an SVM directly on these low-dimensional samples, we obtain a model whose generalization error is comparable to that of the best classifier over the true directly on the true data. Their argument first shows that if the measurement matrix $A$ is RIP$_2$, then inner products between convex hulls of $k$-sparse vectors also satisfy a sort of RIP property that also depends on the radius of the data. They then apply this result to compare the \emph{projection} of a classifier learned over the true data points, $A\widehat{w}_S$ to the classifier learned over the compressed samples, $\widehat{w}_{AS}$. In particular, they show that 

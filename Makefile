@@ -1,6 +1,6 @@
 LATEX = pdflatex
-#LATEX_FLAGS = -shell-escape -interaction=batchmode
-LATEX_FLAGS = -shell-escape 
+LATEX_FLAGS = -shell-escape -interaction=batchmode
+#LATEX_FLAGS = -shell-escape 
 
 all: main.pdf talk.pdf
 

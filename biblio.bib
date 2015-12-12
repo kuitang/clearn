@@ -1,12 +1,47 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% http://bibdesk.sourceforge.net/
 
-%% Created for Kui Tang at 2015-12-10 19:53:06 -0500 
+%% Created for Kui Tang at 2015-12-12 14:48:42 -0500 
 
 
 %% Saved with string encoding Unicode (UTF-8) 
 
 
+
+@article{Candes2006,
+	Abstract = {Suppose we wish to recover a vector x0 ∈ ℝ𝓂 (e.g., a digital signal or image) from incomplete and contaminated observations y = A x0 + e; A is an 𝓃 × 𝓂 matrix with far fewer rows than columns (𝓃 ≪ 𝓂) and e is an error term. Is it possible to recover x0 accurately based on the data y?To recover x0, we consider the solution x# to the 𝓁1-regularization problem $${\rm \min}\; |x\|_{\ell_1} \quad {\rm subject \; to } \; \|Ax-y\|_{\ell_2} \leq \epsilon,$$ where ϵ is the size of the error term e. We show that if A obeys a uniform uncertainty principle (with unit-normed columns) and if the vector x0 is sufficiently sparse, then the solution is within the noise level $$\|x^\sharp - x_0\|_{\ell_2} \leq C \cdot \epsilon.$$As a first example, suppose that A is a Gaussian random matrix; then stable recovery occurs for almost all such A's provided that the number of nonzeros of x0 is of about the same order as the number of observations. As a second instance, suppose one observes few Fourier samples of x0; then stable recovery occurs for almost any set of 𝓃 coefficients provided that the number of nonzeros is of the order of 𝓃/(log 𝓂)6.In the case where the error term vanishes, the recovery is of course exact, and this work actually provides novel insights into the exact recovery phenomenon discussed in earlier papers. The methodology also explains why one can also very nearly recover approximately sparse signals. {\copyright} 2006 Wiley Periodicals, Inc.},
+	Author = {Cand{\`e}s, Emmanuel J. and Romberg, Justin K. and Tao, Terence},
+	Date-Added = {2015-12-12 19:48:41 +0000},
+	Date-Modified = {2015-12-12 19:48:42 +0000},
+	Doi = {10.1002/cpa.20124},
+	Issn = {1097-0312},
+	Journal = {Communications on Pure and Applied Mathematics},
+	Number = {8},
+	Pages = {1207--1223},
+	Publisher = {Wiley Subscription Services, Inc., A Wiley Company},
+	Title = {Stable signal recovery from incomplete and inaccurate measurements},
+	Url = {http://dx.doi.org/10.1002/cpa.20124},
+	Volume = {59},
+	Year = {2006},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1002/cpa.20124}}
+
+@article{Baraniuk08,
+	Author = {Baraniuk, Richard and Davenport, Mark and DeVore, Ronald and Wakin, Michael},
+	Date-Added = {2015-12-12 19:44:29 +0000},
+	Date-Modified = {2015-12-12 19:44:29 +0000},
+	Doi = {10.1007/s00365-007-9003-x},
+	Issn = {0176-4276},
+	Journal = {Constructive Approximation},
+	Keywords = {Compressed sensing; Sampling; Random matrices; Concentration inequalities; 15N2; 15A52; 60F10; 94A12; 94A20},
+	Language = {English},
+	Number = {3},
+	Pages = {253-263},
+	Publisher = {Springer-Verlag},
+	Title = {A Simple Proof of the Restricted Isometry Property for Random Matrices},
+	Url = {http://dx.doi.org/10.1007/s00365-007-9003-x},
+	Volume = {28},
+	Year = {2008},
+	Bdsk-Url-1 = {http://dx.doi.org/10.1007/s00365-007-9003-x}}
 
 @techreport{Sridharan08,
 	Author = {Karthik Sridharan and Nathan Srebro and Shai Shalev-Shwartz},
@@ -44,20 +79,18 @@
 	Title = {Compressed learning: Universal sparse dimensionality reduction and learning in the measurement domain},
 	Year = {2009}}
 
-@ARTICLE{Bandeira12,
-   author = {{Bandeira}, A.~S. and {Dobriban}, E. and {Mixon}, D.~G. and 
-	{Sawin}, W.~F.},
-    title = "{Certifying the restricted isometry property is hard}",
-  journal = {ArXiv e-prints},
-archivePrefix = "arXiv",
-   eprint = {1204.1580},
- primaryClass = "math.FA",
- keywords = {Mathematics - Functional Analysis, Computer Science - Computational Complexity, Computer Science - Information Theory},
-     year = 2012,
-    month = apr,
-   adsurl = {http://adsabs.harvard.edu/abs/2012arXiv1204.1580B},
-  adsnote = {Provided by the SAO/NASA Astrophysics Data System}
-}
+@article{Bandeira12,
+	Adsnote = {Provided by the SAO/NASA Astrophysics Data System},
+	Adsurl = {http://adsabs.harvard.edu/abs/2012arXiv1204.1580B},
+	Archiveprefix = {arXiv},
+	Author = {{Bandeira}, A.~S. and {Dobriban}, E. and {Mixon}, D.~G. and {Sawin}, W.~F.},
+	Eprint = {1204.1580},
+	Journal = {ArXiv e-prints},
+	Keywords = {Mathematics - Functional Analysis, Computer Science - Computational Complexity, Computer Science - Information Theory},
+	Month = apr,
+	Primaryclass = {math.FA},
+	Title = {{Certifying the restricted isometry property is hard}},
+	Year = 2012}
 
 @inproceedings{Berinde2008,
 	Abstract = {There are two main algorithmic approaches to sparse signal recovery: geometric and combinatorial. The geometric approach utilizes geometric properties of the measurement matrix Phi. A notable example is the Restricted Isometry Property, which states that the mapping Phi preserves the Euclidean norm of sparse signals; it is known that random dense matrices satisfy this constraint with high probability. On the other hand, the combinatorial approach utilizes sparse matrices, interpreted as adjacency matrices of sparse (possibly random) graphs, and uses combinatorial techniques to recover an approximation to the signal. In this paper we present a unification of these two approaches. To this end, we extend the notion of Restricted Isometry Property from the Euclidean lscr2 norm to the Manhattan lscr1 norm. Then we show that this new lscr1 -based property is essentially equivalent to the combinatorial notion of expansion of the sparse graph underlying the measurement matrix. At the same time we show that the new property suffices to guarantee correctness of both geometric and combinatorial recovery algorithms. As a result, we obtain new measurement matrix constructions and algorithms for signal recovery which, compared to previous algorithms, are superior in either the number of measurements or computational efficiency of decoders.},
