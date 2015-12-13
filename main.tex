@@ -2,11 +2,15 @@
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
 \usepackage{geometry}
+\usepackage{graphicx}
 \geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
 \usepackage{color}
 \usepackage{babel}
+\usepackage{bm}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{parskip}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
@@ -16,10 +20,12 @@
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
 \usepackage[natbibapa]{apacite}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{pdfsync}
-\usepackage{showlabels}
 
 \DeclareMathOperator{\conv}{conv}
 \DeclareMathOperator{\st}{s.t.}
@@ -56,38 +62,310 @@ This offers an alternative to the standard Gaussian and Bernoulli RIP matrices, 
 
 Compressed sensing is based off of two fundamental ideas.
 First is constructing an $m \times n$ \emph{measurement matrix} $A$ which satisfies $\emph{restricted isometry property}$ in $L_p$ with parameters $(k,\epsilon)$, abbreviated $\mbox{RIP}_p(k,\epsilon)$.
-This means that for any $k-$sparse $x$, $$(1-\epsilon)\|x\|_p \le\|Ax\|_p \le (1+\epsilon)\|x\|_p.$$
+This means that for any $k-$sparse $x$,
+\[
+(1-\epsilon)\|x\|_p \le\|Ax\|_p \le (1+\epsilon)\|x\|_p. \label{eq:RIP}
+\]
 Well-known examples are matrices whose entries are Gaussian $\mathcal{N}(0,\sigma=1/\sqrt{m})$ and ones whose entries are Bernoulli $U(-1/\sqrt{m},1/\sqrt{m})$~\citep{Baraniuk08}.
 But these classical constructions have a caveat: being random matrices, the RIP only holds with high probability.
 An open question whether we can deterministically construct measurement matrices with RIP.
 
-The next idea is the compressed sensing linear program~\citep{Candes06}.
+The next idea is the compressed sensing linear program~\citep{Candes2006}.
 Given an input measurement $x$ and a measurement matrix $A$, we seek the solution to
 \begin{alignat*}{1}
 \min & \left\Vert \widehat{x}\right\Vert _{1}\\
-\text{s.t.} & A\widehat{x}=x
+\st & A\widehat{x}=x
 \end{alignat*}
 Let $y$ be the output of this linear program.
 If $A$ satisfying the RIP$_2$ property, then the guarantee is that for any $k$-sparse vector $\tilde{x}$, we have $\|y - x\|_2 \le O(1/\sqrt{k}) \|\tilde{x}-x\|_1$.
 In particular this holds for the best $k-$sparse approximation, that is, $\arg\min_{\tilde{x}} \|\tilde{x}-x\|_1$, so this is a rather strong agnostic learning guarantee.
 Naturally, we may ask whether the RIP can help use solve learning problems beyond that of $L_1$ signal recovery.
 
-\section{Compressed learning}
-\citet{Calderbank09} show it is possible to merge compressive sensing and learning. That is, if our true data are $k$-sparse vectors and we observe compressively-sensed samples and train an SVM directly on these low-dimensional samples, we obtain a model whose generalization error is comparable to that of the best classifier over the true directly on the true data. Their argument first shows that if the measurement matrix $A$ is RIP$_2$, then inner products between convex hulls of $k$-sparse vectors also satisfy a sort of RIP property that also depends on the radius of the data. They then apply this result to compare the \emph{projection} of a classifier learned over the true data points, $A\widehat{w}_S$ to the classifier learned over the compressed samples, $\widehat{w}_{AS}$. In particular, they show that 
-\begin{equation}L_{\mathcal{D}}(A \widehat{w}_S) \leq L_{\mathcal{D}}(\widehat{w}_S) + O(CR^2\epsilon)
-\label{eq:projection-loss-bound}
-\end{equation}
-where $R$ is the radius of the data, $C$ is a regularization constant, and $L_{\mathcal{D}}$ is the empirical regularization loss. This result can be combined with standard results on generalization of SVMs to obtain a bound 
-\begin{equation}
-H_{\mathcal{D}}(\widehat{z}_{AS}) \leq H_{\mathcal{D}}(w_0) + O\left( \sqrt{\left\Vert w_0 \right\Vert^2 \left( R^2 \epsilon + \frac{\log(1/\delta)}{M} \right)} \right)
-\end{equation}
-where $H_\mathcal{D}$ is the empirical hinge loss and $w_0$ is the best classifier in the data domain (full-dimensional space).
+\section{Compressed Learning}
+We first review our notations for support vector machines for classification and regression, review existing results, and present our extensions.
 
-We plan to explore extensions of this idea:
-\begin{enumerate}
-\item Expand the RIP property of dot products to nonlinear kernels. Preliminary calculations show a similar property holds for squared-exponential kernels, albeit with a factor of $\exp(-2\epsilon R - \epsilon^2 R)$ for the lower bound and $\exp(2 \epsilon R)$ for the upper bound. Bounds on polynomial kernels also seem possible by analyzing eigenvalues of the Gram matrix.
-\item Generalize compressive learning to other methods, such as kernel generalized linear models (GLMs). This involves showing an RIP property holds for \emph{linear} combinations support vectors. The current work only proves this for convex combinations because they suffice for SVMs, but kernel GLMs use linear combinations of support vectors. This can be done by performing a more careful analysis. We should be able to rely on standard results to show an analogue of~\eqref{eq:projection-loss-bound}: that the \emph{log-likelihoods} of the projected  model $A\widehat{w}_S$ and the model trained on compressed samples $\widehat{w}_{AS}$ are close, because the log-likelihood is linear in the parameters $w$. We will need to explore the literature further to find analogues of the generalization guarantees for SVMs that apply to bounds we can derive here.
-\end{enumerate}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\columnwidth]{bounds_argument_figure.pdf}
+    \caption{
+Illustration of main argument for compressed learning.
+Horizontal lines denote quantities and vertical lines indicate upper bounds.
+Note how we can bound the error of the classifier trained on samples from the compressed space $\widehat{z}_{AS}$ to that of the classifier trained on samples from the true space $\widehat{z}_S$ without directly comparing the quantities.
+}
+    \label{fig:bounds_argument} 
+
+\end{figure}
+\subsection{Support Vector Machines}
+The training objective for support vector machines is to minimize the hinge loss $H(x,y;w) = \max{0, 1 - yw^\top x}$ where $x$ is the input, $y$ is the label, and $w$ is the linear classifier.
+We define the true hinge loss on distribution $\cal D$ as $H_{\cal D}(w) = E_{(x_i,y_i) \sim {\cal D}} [1 - y_i w^\top x_i]$
+Since our training objective contains a quadratic regularizer, we also define the true regularization as $L(w) = H_{\cal D}(w) + \frac{1}{2C}\left\Vert w \right\Vert$.
+
+The term \emph{support vector} becomes evident when one looks at the dual optimization problem:
+\begin{alignat}{1}
+\max & \sum_{i}\alpha_{i}-\frac{1}{2}\sum_{ij}\alpha_{i}\alpha_{j}y_{i}y_{j}x_{i}^{\top}x_{j}\\
+\text{s.t.} & \forall i\quad0\leq\alpha_{i}\leq C/M
+\label{eq:dual_svm}
+\end{alignat}
+A standard result is then that the SVM classifier $\widehat{w}$ can be written as
+\begin{equation}
+\widehat{w} = \sum_i \alpha_i y_i x_i
+\label{eq:w_dual}
+\end{equation}
+
+For theoretical analysis, we are interested in bounding $L(\widehat{w})$ for a classifier $\widehat{w}$ trained from an i.i.d. sample of $\cal D$ in terms of the true loss of the best classifier $w^*$ over $\cal D$.
+The result is summarized by the following theorem:
+\begin{theorem}[\citet{Sridharan08}]
+\label{thm:svm-generalization}
+Let $\widehat{w}$ be the SVM classifier learned from samples from $\cal D$ and $w^*$ be the best SVM classifier over $\cal D$. Then with probability at least $1 - \delta$ over the training set
+\[
+L_{\cal D}(\widehat{w}_S) \leq L_{\cal D}(\widehat{w}^*) + O\left(\frac{C \log (1/\delta)}{M}\right)
+\]
+\end{theorem}
+
+\subsection{Review of Existing Results}
+\citet{Calderbank09} show it is possible to merge compressed sensing and learning.
+Suppose an $m \times n$ matrix $A$ is $\mbox{RIP}(2k,\epsilon)$.
+Suppose our true data $(x_i, y_i) \in \mathbb{R}^n \times {\pm 1}$ are labeled $k$-sparse vectors in a high dimensional space $S$, but we only observe compressed samples $(Ax_i,y_i)$ in the compressed space $AS$.
+Under these hypotheses, we can of course solve the compressed sensing linear program to recover sparse high-dimensional vectors $\widehat{x}_i$ and train the SVM this space.
+Alternatively, we can simply train a classifier on the compressed samples $Ax_i$.
+We would like to bound the error introduced by the compressed sensing.
+In fact, we can even bound the error of a classifier trained on a sample of compressed data in $AS$ to the best classifier on $S$, even though we do not know any of the $x_i$ directly.
+\begin{theorem}[Theorem 3.1 in \citet{Calderbank09}]
+\label{theorem:alog} Let $A_{m\times n}$ satisfy $(2k,\epsilon)$-RIP
+and let
+\[
+S=\left\langle (x_{1},y_{1}),\ldots,(x_{M},y_{M})\right\rangle 
+\]
+be a training set of size $M$ where each example is sampled i.i.d.
+from some distribution ${\cal D}$ in the data domain. Let $\widehat{w}_{S}$
+be the sort-margin SVM trained on $S$ and $A\widehat{w}_{S}$ be
+the vector in the measurement domain obtained by projecting $\widehat{w}_{S}$.
+Then
+\[
+L_{{\cal D}}(A\widehat{w}_{S})\leq L_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon)
+\]
+where $C\geq\sum_{i}\alpha_{i}$ is an upper bound on sum of the optimal
+Lagrange multipliers $\alpha_{i}$ in the dual SVM and $R$ is the
+radius of data $x_{i}$.
+\end{theorem}
+
+The result follows from chaining together several bounds, illustrated in Figure~\ref{fig:bounds_argument}. One ingredient is the standard generalization bound for SVMs.
+The other bound, $L_{\cal D}(A\widehat{w}_S) \leq L_{\cal D}(\widehat{w}_S) + O(CR^2\epsilon)$ can be derived from the following lemma, which states that an RIP matrix $A$ preserves inner products of convex combinations of $k$-sparse vectors:
+
+\begin{lemma}[Theorem 4.4 in \citet{Calderbank2009}]
+\label{lemma:their-theorem-44}Let $A_{m\times n}$ be a $(2k,\epsilon)$
+RIP matrix and $(x_1,y_1), \ldots, (x_M,y_M)$ and $(x_1',y_1'), \ldots, (x_N',y_N')$ be two labeled datasets. Let $\alpha_1, \ldots, \alpha_M$ and $\beta_1, \ldots, \beta_N$ be nonnegative numbers with $\sum_i \alpha_i \leq C$ and $\sum_j \beta_j \leq D$ for some $C, D \geq 0$. Let
+\begin{eqnarray*}
+\bm{\alpha} & = & \sum_{i}\alpha_iy_ix_i \\
+\bm{\beta} & = & \sum_{j}\beta_j y_j',x_j'
+\end{eqnarray*}
+Then
+\[
+\left|\bm{\beta}^{\top}\bm{\alpha}-\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}\right|\leq3CDR^{2}\epsilon
+\]
+\end{lemma}
+
+This lemma in turn follows from an RIP on dot products whose proof is elementary
+\[
+(1 + \epsilon)x^\top x - 2R^2\epsilon \leq (Ax)^\top (Ax') \leq (1 - \epsilon) x^\top x'
+\label{eq:dot-rip}
+\]
+for $k$-sparse $x,x'$.
+
+\subsection{RIP for Squared Exponential Kernels}
+To generalize results to new kernels, we prove weakened variants of Lemma~\ref{lem:kernel}. The only one we were able to obtain bounds for was the squared exponential kernel, which is
+\begin{equation}
+k(x,x')=\sigma^{2}\exp\left(-\frac{\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right) \label{eq:kSE}
+\end{equation}
+which has parameters variance $\sigma^{2}$ and length scale $\ell$.
+Plugging (\ref{eq:kSE}) into (\ref{eq:RIP}) gives us
+\begin{eqnarray*}
+k_{\sigma,\ell}(Ax,Ax') & \geq & \sigma^{2}\exp\left(-\frac{\left\Vert A(x-x')\right\Vert _{2}^{2}}{2\ell^{2}}\right)\\
+ & \geq & \sigma^{2}\exp\left(-\frac{(1+\epsilon)\left\Vert x-x'\right\Vert _{2}^{2}}{2\ell^{2}}\right)\\
+ & \geq & k_{\sigma,\ell}(x,x')\exp\left(-2\epsilon R-\epsilon^{2}R\right)
+\end{eqnarray*}
+On the other hand,
+\begin{eqnarray*}
+k_{\sigma,\ell}(Ax,Ax') & \leq & \sigma^{2}\exp\left(-(1-\epsilon)^{2}\left\Vert x-x'\right\Vert _{2}^{2}\right)\\
+ & \leq & \sigma^{2}\exp\left(-\left\Vert x-x'\right\Vert _{2}^{2}\right)\exp\left(2\epsilon\left\Vert x-x'\right\Vert _{2}^{2}\right)\exp\left(-\epsilon^{2}\left\Vert x-x'\right\Vert _{2}^{2}\right)\\
+ & \leq & k(x,x')\exp(2\epsilon R)
+\end{eqnarray*}
+In summary, we have
+\begin{equation}
+\exp(-2\epsilon R-\epsilon^{2}R)k(x,x')\leq k(Ax,Ax')\leq\exp(2\epsilon R)k(x,x')\label{eq:exp-bound}
+\end{equation}
+Unfortunately, the constant factor has increased from $\epsilon$
+to an $\exp(\epsilon)$.
+
+\subsection{Support Vector Regression}
+We can get the same asymptotic bounds for support vector regression.
+The loss function for support vector regression is the $\rho$-insensitive
+(tube) loss, defined as
+\begin{equation}
+T(x,y;w)=\max\left\{ y-w^{\top}x-\rho,w^{\top}x-y-\rho,0\right\} \label{eq:epsilon-insensitive}
+\end{equation}
+The primal problem is
+\begin{alignat*}{1}
+\min & \frac{1}{2}\left\Vert w\right\Vert ^{2}+C\sum_{i}\left(\xi_{i}+\xi_{i}^{*}\right)\\
+\text{s.t.} & \begin{cases}
+y_{i}-w^{\top}x_{i} & \leq\rho+\xi_{i}\\
+w^{\top}x_{i}-y & \leq\rho+\xi_{i}^{*}
+\end{cases}
+\end{alignat*}
+while the dual problem is
+\begin{alignat*}{1}
+\max & -\frac{1}{2}\sum_{ij}\left(\alpha_{i}-\alpha_{i}^{*}\right)\left(\alpha_{j}-\alpha_{j}^{*}\right)x_{i}^{\top}x_{j}-\rho\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)+\sum_{i}y_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)\\
+\text{s.t.} & \begin{cases}
+\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right) & =0\\
+\alpha_{i},\alpha_{i}^{*} & \in[0,C]
+\end{cases}
+\end{alignat*}
+and the dual (kernel) representation of the weight vector is given
+by
+\begin{equation}
+w=\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)x_{i}\label{eq:dual-w}
+\end{equation}
+Now we need to prove a variant of Theorem 4.4 for the regression problem.
+This involves a slightly different manipulation to deal with positive
+and negative terms, but the ideas and results are the same.
+\begin{lemma}
+\label{lem:my-theorem-44}Let $A_{m\times n}$ be a $(2k,\epsilon)$
+RIP matrix and $\{\gamma_{i}\},\{\delta_{i}\}$ be real numbers with
+$\sum_{i}\left|\gamma_{i}\right|\leq C$ and $\sum_{i}\left|\delta_{i}\right|\leq D$
+for some $C,D\geq0$. Let
+\begin{eqnarray*}
+\bm{\alpha} & = & \sum_{i}\gamma_{i}x_{i}'\\
+\bm{\beta} & = & \sum_{j}\delta_{i}x_{j}'
+\end{eqnarray*}
+Then
+\[
+\left|\bm{\beta}^{\top}\bm{\alpha}-\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}\right|\leq3CDR^{2}\epsilon
+\]
+\end{lemma}
+\begin{proof}
+We write out $\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}$, split
+up into positive and negative terms, and upper bound the quantity.
+The lower bound is symmetric.
+\begin{eqnarray*}
+\left(A\bm{\beta}\right)^{\top}A\bm{\alpha} & = & \sum_{ij}\gamma_{i}\delta_{i}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ & = & \sum_{ij:\sign(\gamma_{i})=\sign(\delta_{j})}\gamma_{i}\delta_{j}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ &  & -\sum_{ij:\sign(\gamma_{i})\neq\sign(\delta_{j})}\left|\gamma_{i}\right|\left|\delta_{j}\right|\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)\\
+ & \leq & \sum_{ij:\sign(\gamma_{i})=\sign(\delta_{j})}\gamma_{i}\delta_{j}\left((1-\epsilon)x_{i}^{\top}x_{j}'+2R^{2}\epsilon\right)\\
+ &  & -\sum_{ij:\sign(\gamma_{i})\neq\sign(\delta_{j})}\left|\gamma_{i}\right|\left|\delta_{j}\right|\left((1+\epsilon)x_{i}^{\top}x_{j}'-2R^{2}\epsilon\right)\\
+ & = & \bm{\alpha}^{\top}\bm{\beta}+\sum_{ij}\left|\gamma_{i}\right|\left|\delta_{j}\right|\epsilon\left(2R^{2}-x_{i}^{\top}x_{j}'\right)\\
+ & \leq & \bm{\alpha}^{\top}\bm{\beta}+3R^{2}CD\epsilon
+\end{eqnarray*}
+We have used the upper RIP bound for $\gamma_{i}\delta_{j}\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)$
+and the lower bound for the $\left|\gamma_{i}\right|\left|\delta_{j}\right|\left(Ax_{i}\right)^{\top}\left(Ax_{j}'\right)$
+term. The last line follows from Cauchy-Schwarz (in $\ell_{1}$).
+
+Now we prove the main result for regression.
+\end{proof}
+\begin{theorem}
+Let $A$ be a $m \times n$ $(2k, \epsilon)$ RIP matrix and $S = {(x_i,y_i)_{i=1}^M}$ be a training set of size $M$ where each $x_i$ is $k$-sparse, sampled i.i.d. from some distribution $\cal D$. Let $\widehat{w}_S$ be the SVM trained on $S$ and $A\widehat{w}_S$ be its projection. Then
+\[
+L_{\cal D}(A\widehat{w}_S) \leq L_{\cal D}(\widehat{w}_S) + O(CR^2 \epsilon)
+\]
+\end{theorem}
+\begin{proof}
+Similarly to the classification case, the regularization loss is the
+sum of the $\epsilon$-insensitive loss and a quadratic regularizer.
+The proof for the bound on the quadratic regularizer is the same,
+and so we have bound for the quadratic regularizer is the exact same.
+So it remains to show
+\begin{equation}
+T_{{\cal D}}(A\widehat{w}_{S})\leq T_{{\cal D}}(\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)\label{eq:dist-T-bound}
+\end{equation}
+We apply our Lemma \ref{lem:my-theorem-44} with an arbitrary
+test point, e.g. $(x'_{1},y_{1}')=(x',y')$ and $N=1$, $D=1$. We
+want to prove
+\begin{equation}
+T(Ax',y',A\widehat{w}_{S})\leq T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)\label{eq:pointwise-T-bound}
+\end{equation}
+Since (\ref{eq:pointwise-T-bound}) applies pointwise, it implies
+(\ref{eq:dist-T-bound}) for any distribution ${\cal D}$. Now $T$
+is defined case-wise, so to prove (\ref{eq:pointwise-T-bound}) we
+need to look at the different cases.
+
+\textbf{$T(Ax',y',A\widehat{w}_{S})$ is zero.} This is trivial since
+$T(x',y'\widehat{w}_{S})$ is nonnegative by definition.
+
+\textbf{$T(x',y',\widehat{w}_{S})$ is zero.} This implies $y'-\rho<\widehat{w}_{S}^{\top}x'<y'+\rho$.
+Applying the upper bound of Lemma~\ref{lem:my-theorem-44},
+we have
+\[
+\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)\leq\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)\leq y'+\rho+O(CR^{2}\epsilon)
+\]
+The lower bound gives a symmetric result. Combining them gives us
+\[
+T(Ax',y',A\widehat{w}_{S})\leq\left|y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)\right|<\rho+O(CR^{2}\epsilon)=T(x',y'\widehat{w_{S}})+O(CR^{2}\epsilon+\rho)
+\]
+as desired.
+
+\textbf{$T(Ax',y'A\widehat{w}_{S})=y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)$
+and $T(x',y',\widehat{w}_{S})=y'-\widehat{w}_{S}^{\top}x'$ (or both
+negated).} These cases are symmetric so we prove just the first. Applying
+the lower bound of Lemma~\ref{lem:my-theorem-44} we have
+\[
+T(Ax',y'A\widehat{w}_{S})=y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)\leq y'-\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)=T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon)
+\]
+as desired.
+
+\textbf{$T(Ax',y',A\widehat{w}_{S})=y'-\left(A\widehat{w}_{s}\right)^{\top}\left(Ax'\right)$
+while $T(x',y',\widehat{w}_{S})=\widehat{w}_{S}^{\top}x'-y'$ (or
+both negated).} In this case, we $y'-\widehat{w}_{S}^{\top}x'<0$.
+Applying the lower bound of Lemma~\ref{lem:my-theorem-44},
+we have
+\[
+\widehat{w}_{S}^{\top}x'-O(CR^{2}\epsilon)\leq\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)
+\]
+which implies
+\[
+y'-\widehat{w}_{S}^{\top}x'+O(CR^{2}\epsilon)\geq y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)
+\]
+Since $y'-\widehat{w}_{S}^{\top}x'<0$ while $T(x',y',\widehat{w}_{S})\geq0$,
+we have
+\[
+y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)<O(CR^{2}\epsilon)\leq T(x',y',\widehat{w}_{S})+O(CR^{2}\epsilon+\rho)
+\]
+as desired.
+\end{proof}
+
+\subsection{Linear and Ridge Regression}
+We tried but failed to obtain a similar bound for linear regression.
+Here, we explain the problem and our partial solution.
+Completing this solution requires constructing a new kind of RIP matrix that preserves inner products of the form $(A\top A x)^\top (A^\top A x)$ as well as preserving distances in $\left\Vert Ax \right\Vert$, which to our knowledge does not yet exist.
+
+Suppose $X$ is an $M \times n$ matrix of features and $y$ is an $M \times 1$ vector of real labels and $\beta$ an $n \times 1$ vector representing a linear function.
+Our model is $y = X\beta + \epsilon$ where $\epsilon_i \sim {\cal N}{0,\sigma^2}$.
+The linear regression problem is to find an estimator $\widehat{\beta}$ for $\beta$ to minimize the squared error on the training sample.
+The objective for the ridge regression estimator $\widehat{\beta}_\lambda$ also adds a quadratic regularizer with scale $\lambda$.
+In the classical linear regression analysis, we assume $X$ and $\beta$ are fixed. Only $y$ is random.
+In fact, the linear regression estimator $\beta$ is still optimal even when $X$ is random under certain conditions~\citep{Shaffer1991}.
+However, since the estimators depend on the labels $y$, the estimators are also random.
+
+The regression estimators can be given in closed form:
+\[
+\widehat{\beta}_\lambda = (X^\top X + \lambda I)^{-1} X^\top y
+\]
+and $\widehat{\beta}$ simply omits the $\lambda I$ term.
+
+The measure of generalization error (which we would like to bound) is \emph{risk}, e.g. expected squared error under the true distribution:
+\begin{eqnarray*}
+E_{Y}\left[\frac{1}{n}\left\Vert Y-X\widehat{\beta}\right\Vert ^{2}\right] & = & E_{Y}\left[\left\Vert \widehat{\beta}-\beta\right\Vert _{\Sigma}^{2}\right]\\
+& = & E_{Y}\left[\left\Vert \widehat{\beta}-\overline{\beta}\right\Vert _{\Sigma}^{2}\right] + E_{Y}\left[\left\Vert \overline{\beta}-\widehat{\beta}\right\Vert _{\Sigma}^{2}\right]
+\end{eqnarray*}
+where $\Sigma = \frac{1}{n} X^\top X$ and $\widehat{\beta} = E_Y[\widehat{\beta}]$ and $\left\Vert x \right\Vert_C = x^\top C x$.
+
+Let us compare the risk of the projected model $A\widehat{\beta}_{S}$ to that of the model trained over high dimensional samples $\widehat{\beta}_S$.
+The first step is to compute the variance:
+\[
+E\left[\left\Vert A\widehat{\beta}_{S}-A\overline{\beta}_{S}\right\Vert _{A\Sigma A^{\top}}^{2}\right]=E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{A^{\top}A\Sigma A^{\top}A}^{2}\right]
+\] 
+Compare the right side to the quantity $E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{\Sigma}^{2}\right]$, which is the variance of the estimator in the high-dimensional space $\widehat{\beta}_S$.
+The norm $\left\Vert x \right\Vert_{A^\top A \Sigma A^\top A}$ contains the factor $A^\top Ax$.
+But RIP doesn't apply here because $Ax$ is no longer sparse, and $A^\top$ does not have interesting properties.
+However, if we somehow could construct a matrix $A$ that preserves inner products $(A^{\top}A\Sigma A^{\top}Ax)^\top(A^{\top}A\Sigma A^{\top}Ax')$ for $k$-sparse vectors $x,x'$, then we may be able to apply similar arguments to bound linear regression, which has different characteristics than support vector regression.
 
 \section{RIP$_2$ from expander graphs}
 
@@ -98,6 +376,9 @@ One particular application of such an expander graph, should we be able to find 
 \section{Derandomized data-dependent dimensionality reduction}
 
 Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
+
+\section{Conclusion}
+We extended results for compressed learning~\citep{Calderbank2009} to apply to support vector regression and squared exponential kernels. We have identified a new explicit matrix construction that would enable compressed learning of linear regression as well.
 
 \bibliographystyle{plainnat}
 \bibliography{biblio}
