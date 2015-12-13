@@ -49,6 +49,7 @@
 \title{Expanding Compressed Learning}
 
 \author{Kevin Shi and Kui Tang}
+\date{14 December 2015}
 \maketitle
 \begin{abstract}
 Compressed sensing can offer fast and simple techniques for machine learning in high dimensional space. Recently, \citet{Calderbank09} have shown that the RIP$_2$ property of a measurement matrix allows us to train linear support vector machines on compressed measurements directly, rather than recovering a high dimensional sparse vector and working in that space.
@@ -90,13 +91,13 @@ We first review our notations for support vector machines for classification and
     \caption{
 Illustration of main argument for compressed learning.
 Horizontal lines denote quantities and vertical lines indicate upper bounds.
-Note how we can bound the error of the classifier trained on samples from the compressed space $\widehat{z}_{AS}$ to that of the classifier trained on samples from the true space $\widehat{z}_S$ without directly comparing the quantities.
+Note how we can bound the error of the classifier trained on samples from the compressed space $\widehat{z}_{AS}$ to that of the classifier trained on samples from the true space $\widehat{w}_S$ without directly comparing the quantities.
 }
     \label{fig:bounds_argument} 
 
 \end{figure}
 \subsection{Support Vector Machines}
-The training objective for support vector machines is to minimize the hinge loss $H(x,y;w) = \max{0, 1 - yw^\top x}$ where $x$ is the input, $y$ is the label, and $w$ is the linear classifier.
+The training objective for support vector machines is to minimize the hinge loss $H(x,y;w) = \max\{0, 1 - yw^\top x\}$ where $x$ is the input, $y$ is the label, and $w$ is the linear classifier.
 We define the true hinge loss on distribution $\cal D$ as $H_{\cal D}(w) = E_{(x_i,y_i) \sim {\cal D}} [1 - y_i w^\top x_i]$
 Since our training objective contains a quadratic regularizer, we also define the true regularization as $L(w) = H_{\cal D}(w) + \frac{1}{2C}\left\Vert w \right\Vert$.
 
@@ -111,8 +112,10 @@ A standard result is then that the SVM classifier $\widehat{w}$ can be written a
 \widehat{w} = \sum_i \alpha_i y_i x_i
 \label{eq:w_dual}
 \end{equation}
+In fact, many of the $\alpha_i$ will be zero, so $\widehat{w}$ is a sparse convex combination of training points.
+The $x_i$'s with positive Lagrange multipliers $\alpha_i$ are the support vectors.
 
-For theoretical analysis, we are interested in bounding $L(\widehat{w})$ for a classifier $\widehat{w}$ trained from an i.i.d. sample of $\cal D$ in terms of the true loss of the best classifier $w^*$ over $\cal D$.
+For theoretical analysis, we want to bound $L(\widehat{w})$ for a classifier $\widehat{w}$ trained from an i.i.d. sample of $\cal D$ in terms of the true loss of the best classifier $w^*$ over $\cal D$.
 The result is summarized by the following theorem:
 \begin{theorem}[\citet{Sridharan08}]
 \label{thm:svm-generalization}
@@ -125,7 +128,7 @@ L_{\cal D}(\widehat{w}_S) \leq L_{\cal D}(\widehat{w}^*) + O\left(\frac{C \log (
 \subsection{Review of Existing Results}
 \citet{Calderbank09} show it is possible to merge compressed sensing and learning.
 Suppose an $m \times n$ matrix $A$ is $\mbox{RIP}(2k,\epsilon)$.
-Suppose our true data $(x_i, y_i) \in \mathbb{R}^n \times {\pm 1}$ are labeled $k$-sparse vectors in a high dimensional space $S$, but we only observe compressed samples $(Ax_i,y_i)$ in the compressed space $AS$.
+Suppose our true data $(x_i, y_i) \in \mathbb{R}^n \times \{\pm 1\}$ are labeled $k$-sparse vectors in a high dimensional space $S$, but we only observe compressed samples $(Ax_i,y_i)$ in the compressed space $AS$.
 Under these hypotheses, we can of course solve the compressed sensing linear program to recover sparse high-dimensional vectors $\widehat{x}_i$ and train the SVM this space.
 Alternatively, we can simply train a classifier on the compressed samples $Ax_i$.
 We would like to bound the error introduced by the compressed sensing.
@@ -134,7 +137,7 @@ In fact, we can even bound the error of a classifier trained on a sample of comp
 \label{theorem:alog} Let $A_{m\times n}$ satisfy $(2k,\epsilon)$-RIP
 and let
 \[
-S=\left\langle (x_{1},y_{1}),\ldots,(x_{M},y_{M})\right\rangle 
+S=\left\{ (x_{1},y_{1}),\ldots,(x_{M},y_{M})\right\} 
 \]
 be a training set of size $M$ where each example is sampled i.i.d.
 from some distribution ${\cal D}$ in the data domain. Let $\widehat{w}_{S}$
@@ -152,7 +155,7 @@ radius of data $x_{i}$.
 The result follows from chaining together several bounds, illustrated in Figure~\ref{fig:bounds_argument}. One ingredient is the standard generalization bound for SVMs.
 The other bound, $L_{\cal D}(A\widehat{w}_S) \leq L_{\cal D}(\widehat{w}_S) + O(CR^2\epsilon)$ can be derived from the following lemma, which states that an RIP matrix $A$ preserves inner products of convex combinations of $k$-sparse vectors:
 
-\begin{lemma}[Theorem 4.4 in \citet{Calderbank2009}]
+\begin{lemma}[Theorem 4.4 in~\citet{Calderbank09}]
 \label{lemma:their-theorem-44}Let $A_{m\times n}$ be a $(2k,\epsilon)$
 RIP matrix and $(x_1,y_1), \ldots, (x_M,y_M)$ and $(x_1',y_1'), \ldots, (x_N',y_N')$ be two labeled datasets. Let $\alpha_1, \ldots, \alpha_M$ and $\beta_1, \ldots, \beta_N$ be nonnegative numbers with $\sum_i \alpha_i \leq C$ and $\sum_j \beta_j \leq D$ for some $C, D \geq 0$. Let
 \begin{eqnarray*}
@@ -225,7 +228,7 @@ by
 \begin{equation}
 w=\sum_{i}\left(\alpha_{i}-\alpha_{i}^{*}\right)x_{i}\label{eq:dual-w}
 \end{equation}
-Now we need to prove a variant of Theorem 4.4 for the regression problem.
+Now we need to prove a variant of~\citet{Calderbank09}'s Theorem 4.4 for the regression problem.
 This involves a slightly different manipulation to deal with positive
 and negative terms, but the ideas and results are the same.
 \begin{lemma}
@@ -242,6 +245,66 @@ Then
 \left|\bm{\beta}^{\top}\bm{\alpha}-\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}\right|\leq3CDR^{2}\epsilon
 \]
 \end{lemma}
+The proof is in Appendix~\ref{app:regression-theorem-proof}.
+
+\subsection{Linear and Ridge Regression}
+We tried but failed to obtain a similar bound for linear regression.
+Here, we explain the problem and our partial solution.
+Completing this solution requires constructing a new kind of RIP matrix that preserves inner products of the form $(A\top A x)^\top (A^\top A x)$ as well as preserving distances in $\left\Vert Ax \right\Vert$, which to our knowledge does not yet exist.
+
+Suppose $X$ is an $M \times n$ matrix of features and $y$ is an $M \times 1$ vector of real labels and $\beta$ an $n \times 1$ vector representing a linear function.
+Our model is $y = X\beta + \epsilon$ where $\epsilon_i \sim {\cal N}{0,\sigma^2}$.
+The linear regression problem is to find an estimator $\widehat{\beta}$ for $\beta$ to minimize the squared error on the training sample.
+The objective for the ridge regression estimator $\widehat{\beta}_\lambda$ also adds a quadratic regularizer with scale $\lambda$.
+In the classical linear regression analysis, we assume $X$ and $\beta$ are fixed. Only $y$ is random.
+In fact, the linear regression estimator $\beta$ is still optimal even when $X$ is random under certain conditions~\citep{Shaffer1991}.
+However, since the estimators depend on the labels $y$, the estimators are also random.
+
+The regression estimators can be given in closed form:
+\[
+\widehat{\beta}_\lambda = (X^\top X + \lambda I)^{-1} X^\top y
+\]
+and $\widehat{\beta}$ simply omits the $\lambda I$ term.
+
+The measure of generalization error (which we would like to bound) is \emph{risk}, e.g. expected squared error under the true distribution:
+\begin{eqnarray*}
+E_{Y}\left[\frac{1}{n}\left\Vert Y-X\widehat{\beta}\right\Vert ^{2}\right] & = & E_{Y}\left[\left\Vert \widehat{\beta}-\beta\right\Vert _{\Sigma}^{2}\right]\\
+& = & E_{Y}\left[\left\Vert \widehat{\beta}-\overline{\beta}\right\Vert _{\Sigma}^{2}\right] + E_{Y}\left[\left\Vert \overline{\beta}-\widehat{\beta}\right\Vert _{\Sigma}^{2}\right]
+\end{eqnarray*}
+where $\Sigma = \frac{1}{n} X^\top X$ and $\widehat{\beta} = E_Y[\widehat{\beta}]$ and $\left\Vert x \right\Vert_C = x^\top C x$.
+
+Let us compare the risk of the projected model $A\widehat{\beta}_{S}$ to that of the model trained over high dimensional samples $\widehat{\beta}_S$.
+The first step is to compute the variance:
+\[
+E\left[\left\Vert A\widehat{\beta}_{S}-A\overline{\beta}_{S}\right\Vert _{A\Sigma A^{\top}}^{2}\right]=E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{A^{\top}A\Sigma A^{\top}A}^{2}\right]
+\] 
+Compare the right side to the quantity $E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{\Sigma}^{2}\right]$, which is the variance of the estimator in the high-dimensional space $\widehat{\beta}_S$.
+The norm $\left\Vert x \right\Vert_{A^\top A \Sigma A^\top A}$ contains the factor $A^\top Ax$.
+But RIP doesn't apply here because $Ax$ is no longer sparse, and $A^\top$ does not have interesting properties.
+However, if we somehow could construct a matrix $A$ that preserves inner products $(A^{\top}A\Sigma A^{\top}Ax)^\top(A^{\top}A\Sigma A^{\top}Ax')$ for $k$-sparse vectors $x,x'$, then we may be able to apply similar arguments to bound linear regression, which has different characteristics than support vector regression.
+
+\section{RIP$_2$ from expander graphs}
+
+The $\ell_2$ norm is the most interesting norm for machine learning applications, because many models are linear models in an appropriate feature space. However the expander graph construction from \citet{Berinde2008} only constructs an RIP$_p$ matrix for $1 \le p < 1+O(1/\log n)$. For the $\ell_2$-norm, there is a lower bound such that for any $A \in \{0,1\}^{m\times n}$ satisfies the RIP$_2$ property, it must be that $m = \Omega(k^2)$. To our knowledge there is no construction matching this lower bound. 
+
+One particular application of such an expander graph, should we be able to find one, is to extend the ideas of the previous section to compressive learning with a sparse expander graph as the measurement matrix, rather than a dense complete matrix as presently must be the case. This would give us a learning algorithm requiring fewer arithmetic operations.
+
+\section{Derandomized data-dependent dimensionality reduction}
+
+Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
+
+\section{Conclusion}
+We extended results for compressed learning~\citep{Calderbank2009} to apply to support vector regression and squared exponential kernels. We have identified a new explicit matrix construction that would enable compressed learning of linear regression as well.
+
+\bibliographystyle{plainnat}
+\bibliography{biblio}
+
+\appendix
+\section{Proofs of Compressed Learning Theorems}
+
+\subsection{Proof of Lemma~\ref{lem:my-theorem-44}}
+\label{app:my-theorem-44-proof}
+
 \begin{proof}
 We write out $\left(A\bm{\beta}\right)^{\top}A\bm{\alpha}$, split
 up into positive and negative terms, and upper bound the quantity.
@@ -262,11 +325,15 @@ term. The last line follows from Cauchy-Schwarz (in $\ell_{1}$).
 Now we prove the main result for regression.
 \end{proof}
 \begin{theorem}
+\label{thm:regression}
 Let $A$ be a $m \times n$ $(2k, \epsilon)$ RIP matrix and $S = {(x_i,y_i)_{i=1}^M}$ be a training set of size $M$ where each $x_i$ is $k$-sparse, sampled i.i.d. from some distribution $\cal D$. Let $\widehat{w}_S$ be the SVM trained on $S$ and $A\widehat{w}_S$ be its projection. Then
 \[
 L_{\cal D}(A\widehat{w}_S) \leq L_{\cal D}(\widehat{w}_S) + O(CR^2 \epsilon)
 \]
 \end{theorem}
+
+\subsection{Proof of Theorem~\ref{thm:regression}}
+\label{app:regression-theorem-proof}
 \begin{proof}
 Similarly to the classification case, the regularization loss is the
 sum of the $\epsilon$-insensitive loss and a quadratic regularizer.
@@ -330,57 +397,5 @@ y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)<O(CR^{2}\epsilon)\leq T(
 \]
 as desired.
 \end{proof}
-
-\subsection{Linear and Ridge Regression}
-We tried but failed to obtain a similar bound for linear regression.
-Here, we explain the problem and our partial solution.
-Completing this solution requires constructing a new kind of RIP matrix that preserves inner products of the form $(A\top A x)^\top (A^\top A x)$ as well as preserving distances in $\left\Vert Ax \right\Vert$, which to our knowledge does not yet exist.
-
-Suppose $X$ is an $M \times n$ matrix of features and $y$ is an $M \times 1$ vector of real labels and $\beta$ an $n \times 1$ vector representing a linear function.
-Our model is $y = X\beta + \epsilon$ where $\epsilon_i \sim {\cal N}{0,\sigma^2}$.
-The linear regression problem is to find an estimator $\widehat{\beta}$ for $\beta$ to minimize the squared error on the training sample.
-The objective for the ridge regression estimator $\widehat{\beta}_\lambda$ also adds a quadratic regularizer with scale $\lambda$.
-In the classical linear regression analysis, we assume $X$ and $\beta$ are fixed. Only $y$ is random.
-In fact, the linear regression estimator $\beta$ is still optimal even when $X$ is random under certain conditions~\citep{Shaffer1991}.
-However, since the estimators depend on the labels $y$, the estimators are also random.
-
-The regression estimators can be given in closed form:
-\[
-\widehat{\beta}_\lambda = (X^\top X + \lambda I)^{-1} X^\top y
-\]
-and $\widehat{\beta}$ simply omits the $\lambda I$ term.
-
-The measure of generalization error (which we would like to bound) is \emph{risk}, e.g. expected squared error under the true distribution:
-\begin{eqnarray*}
-E_{Y}\left[\frac{1}{n}\left\Vert Y-X\widehat{\beta}\right\Vert ^{2}\right] & = & E_{Y}\left[\left\Vert \widehat{\beta}-\beta\right\Vert _{\Sigma}^{2}\right]\\
-& = & E_{Y}\left[\left\Vert \widehat{\beta}-\overline{\beta}\right\Vert _{\Sigma}^{2}\right] + E_{Y}\left[\left\Vert \overline{\beta}-\widehat{\beta}\right\Vert _{\Sigma}^{2}\right]
-\end{eqnarray*}
-where $\Sigma = \frac{1}{n} X^\top X$ and $\widehat{\beta} = E_Y[\widehat{\beta}]$ and $\left\Vert x \right\Vert_C = x^\top C x$.
-
-Let us compare the risk of the projected model $A\widehat{\beta}_{S}$ to that of the model trained over high dimensional samples $\widehat{\beta}_S$.
-The first step is to compute the variance:
-\[
-E\left[\left\Vert A\widehat{\beta}_{S}-A\overline{\beta}_{S}\right\Vert _{A\Sigma A^{\top}}^{2}\right]=E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{A^{\top}A\Sigma A^{\top}A}^{2}\right]
-\] 
-Compare the right side to the quantity $E\left[\left\Vert \widehat{\beta}_{S}-\overline{\beta}_{S}\right\Vert _{\Sigma}^{2}\right]$, which is the variance of the estimator in the high-dimensional space $\widehat{\beta}_S$.
-The norm $\left\Vert x \right\Vert_{A^\top A \Sigma A^\top A}$ contains the factor $A^\top Ax$.
-But RIP doesn't apply here because $Ax$ is no longer sparse, and $A^\top$ does not have interesting properties.
-However, if we somehow could construct a matrix $A$ that preserves inner products $(A^{\top}A\Sigma A^{\top}Ax)^\top(A^{\top}A\Sigma A^{\top}Ax')$ for $k$-sparse vectors $x,x'$, then we may be able to apply similar arguments to bound linear regression, which has different characteristics than support vector regression.
-
-\section{RIP$_2$ from expander graphs}
-
-The $\ell_2$ norm is the most interesting norm for machine learning applications, because many models are linear models in an appropriate feature space. However the expander graph construction from \citet{Berinde2008} only constructs an RIP$_p$ matrix for $1 \le p < 1+O(1/\log n)$. For the $\ell_2$-norm, there is a lower bound such that for any $A \in \{0,1\}^{m\times n}$ satisfies the RIP$_2$ property, it must be that $m = \Omega(k^2)$. To our knowledge there is no construction matching this lower bound. 
-
-One particular application of such an expander graph, should we be able to find one, is to extend the ideas of the previous section to compressive learning with a sparse expander graph as the measurement matrix, rather than a dense complete matrix as presently must be the case. This would give us a learning algorithm requiring fewer arithmetic operations.
-
-\section{Derandomized data-dependent dimensionality reduction}
-
-Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
-
-\section{Conclusion}
-We extended results for compressed learning~\citep{Calderbank2009} to apply to support vector regression and squared exponential kernels. We have identified a new explicit matrix construction that would enable compressed learning of linear regression as well.
-
-\bibliographystyle{plainnat}
-\bibliography{biblio}
 
 \end{document}
