@@ -294,7 +294,7 @@ One particular application of such an expander graph, should we be able to find 
 Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
 
 \section{Conclusion}
-We extended results for compressed learning~\citep{Calderbank2009} to apply to support vector regression and squared exponential kernels. We have identified a new explicit matrix construction that would enable compressed learning of linear regression as well.
+We extended results for compressed learning~\citep{Calderbank09} to apply to support vector regression and squared exponential kernels. We have identified a new explicit matrix construction that would enable compressed learning of linear regression as well.
 
 \bibliographystyle{plainnat}
 \bibliography{biblio}
