@@ -12,6 +12,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{parskip}
+\usepackage{amsfonts}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=page,colorlinks=true]
@@ -23,8 +24,11 @@
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+\newcommand{\E}{\mathbb{E}}
 \usepackage{pdfsync}
 
 \DeclareMathOperator{\conv}{conv}
@@ -283,18 +287,112 @@ The norm $\left\Vert x \right\Vert_{A^\top A \Sigma A^\top A}$ contains the fact
 But RIP doesn't apply here because $Ax$ is no longer sparse, and $A^\top$ does not have interesting properties.
 However, if we somehow could construct a matrix $A$ that preserves inner products $(A^{\top}A\Sigma A^{\top}Ax)^\top(A^{\top}A\Sigma A^{\top}Ax')$ for $k$-sparse vectors $x,x'$, then we may be able to apply similar arguments to bound linear regression, which has different characteristics than support vector regression.
 
-\section{RIP$_2$ from expander graphs}
+\section{Construction of RIP$_2$ matrices}
 
-The $\ell_2$ norm is the most interesting norm for machine learning applications, because many models are linear models in an appropriate feature space. However the expander graph construction from \citet{Berinde2008} only constructs an RIP$_p$ matrix for $1 \le p < 1+O(1/\log n)$. For the $\ell_2$-norm, there is a lower bound such that for any $A \in \{0,1\}^{m\times n}$ satisfies the RIP$_2$ property, it must be that $m = \Omega(k^2)$. To our knowledge there is no construction matching this lower bound. 
+Given a $k$-sparse vector, an obvious lower bound for the number of measurements that need to be made is $\Omega(k)$. It turns out that randomized constructions of RIP matrices based on the Johnson Lindenstrauss lemma match this lower bound. However randomly sampling an RIP matrix is theoretically unsettling, because the problem of determining whether a given matrix is RIP for some given $(k,\epsilon)$ is NP-hard \cite{Bandeira12}. As such, for application purposes one must sample a random matrix, which will be reused indefinitely, and hope that the sampled matrix is in fact RIP. This motivates the search for explicit deterministic constructions of RIP matrices. 
 
-One particular application of such an expander graph, should we be able to find one, is to extend the ideas of the previous section to compressive learning with a sparse expander graph as the measurement matrix, rather than a dense complete matrix as presently must be the case. This would give us a learning algorithm requiring fewer arithmetic operations.
+\subsection{Review of existing explicit constructions}
+Explicit constructions of RIP matrices typically involve treating the columns of the measurement matrix as a set of $n$ codewords in $\mathbb{R}^n$. The codewords are chosen to maximize orthonormality; in other words, each column is a unit vector, and the inner product between two different columns in minimized. This is captured by the following parameter:
 
-\section{Derandomized data-dependent dimensionality reduction}
+\begin{definition}
+Let $\Phi$ be an $m\times n$ matrix, and let $\Phi^i$ denote the $i$th column. Let $\langle \Phi^i,\Phi^i \rangle = 1$ for all $i$, and $\langle \Phi^i, \Phi^j \rangle \le \alpha$ for all $i\neq j$. Then $\Phi$ is an $\alpha$-incoherent matrix.
+\end{definition}
 
-Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
+Using incoherence, one can bound the eigenvalues of the Gram matrix $\Phi^T\Phi$, since the entries of this matrix are inner products of columns of $\Phi$. If all of the diagonal entries of $\Phi^T \Phi$ are $1$, then the Gershgorin circle theorem says that all of the eigenvalues of $\Phi^T\Phi$ are within $\sum_{j\neq i} (\Phi^T\Phi)_{ij} \le \alpha(m-1)$ for some fixed $i$. Since the Rayleigh quotient $\dfrac{x^T\Phi^T\Phi x}{\|x\|_2^2}$ is bounded between the smallest and largest eigenvalues, this proves the RIP property. 
+
+Most existing constructions of the columns as codewords are algebraic in nature. For example, \cite{DeVore07} constructs such a code by considering the graph of all degree$-r$ polynomials with coefficients in $\mathbb{Z}_p$. Let $\Phi$ be a $p^2 \times p^{r+1}$ matrix, so each row is indexed by some element in $\mathbb{Z}_p \times \mathbb{Z}_p$, and each column is indexed by a degree$-r$ polynomial. Since for two different polynomials $P \neq Q, P-Q\neq 0$ has at most $r$ zeroes, the incoherence is bounded by $r/p$. 
+
+Unfortunately this and related constructions of codes lead to $m = O(k^2)$, which is far from the optimal result. If the sparsity parameter is on the order of $O(\sqrt{n})$, then this construction does nothing. Furthermore there is a lower bound on the incoherence of an $m\times n$ matrix which says that $\alpha \ge \sqrt{\dfrac{n-m}{m(n-1}}$, so matrix constructions based on algebraic codes this way cannot beat the $k^2$-barrier. 
+
+\subsection{Bipartite graph model of measurement}
+
+We would like to focus on a less-studied method of constructing codes based on graphs and try to use graph-theoretic arguments directly instead of using algebraic bounds on an adjacency matrix. Let $G = (A,B,E)$ be a bipartite graph with $|B| = n$ and $|A| = m, m << n$. The right side $B$ corresponds to the raw signal, and the left side $A$ corresponds to the measurements. Then a measurement $y_i$ of a signal vector $x$ is $\displaystyle\sum_{j \, : \, (i,j)\in E} x_j$. In other words, the measurement matrix $\Phi$ is the $m\times n$ adjacency matrix of $G$. 
+
+It turns out this simple idea is good enough to get an RIP matrix for the $\ell_1$ norm. Let $G$ be a bipartite $(k,\epsilon)-$vertex expander with left degree $d$; that is, every node in $A$ has degree $d$, and for every subset $X \subset A, |X| \le k, |N(A)| \le (1-\epsilon)kd$. Then we have
+
+\begin{theorem}[\cite{Berinde08}]\label{thm:berinde}
+	The scaled adjacency matrix $\Phi / d$ of a degree$-d$ bipartite expander graph satisfies
+	\[\|x\|_1 \le \|\Phi x\|_1 \le (1+\delta)\|x\|_1\]
+\end{theorem}
+
+%The proof is included in Appendix \ref{pf:berinde}. 
+Note that $m$ is not specified in this proof, and in fact the proof works for any $m$. However, explicit constructions of bipartite expander graphs require $m = kd/\epsilon^{O(1)}$. 
+
+There is a significant issue with this construction: in order for this adjacency matrix to be an RIP we must have $d > \dfrac{n}{m}$, or else there is some dimension that is never measured. This means that $m = k\dfrac{n}{m}/\epsilon^{O(1)} \Longrightarrow m$ is $\Omega(\sqrt{nk})$ which is terrible. Thus we see that in order for expander graph constructions to work, techniques from the fast Johnson Lindenstrauss transform need to be applied, not for the purpose of speeding up the computation but rather for the purpose of allowing a sparse expander graph to be used together by spreading the energy out via the Hadamard matrix. 
+%
+\subsection{Construction using nonnegative matrices}
+
+The optimal Bernoulli$(\{\pm 1/\sqrt{m}\})$ construction of Johnson Lindenstrauss raises an interesting question. It seems to suggest that it is not just the number of possible values the entries can take that matters; somehow allowing negations makes this much more expressive than just $\{0,1\}$ matrices. In this section we'll ignore the issue of randomness for the moment and just see whether we can construct nonnegative matrices using a sub-quadratic number of rows. 
+
+One hypothesis about the effectiveness of matrices with entries drawn from a distribution symmetric about $0$ is that for independently sampled variables $a,b$, we have $\mathbb{E}[ab] = 0$ but $\mathbb{E}[a^2] = \sigma^2$. Thus the cross terms are much smaller than the diagonal terms. For a nonnegative distribution we cannot get the cross terms to be $0$, but we could seek a distribution such that the cross terms are close to $0$. 
+
+One candidate is the Poisson distribution $p(z; \lambda) = \dfrac{\lambda^z e^{-\lambda}}{z!}$. The Poisson has the property that the mean is equal to the variance: $\mathbb{E}[z] = \mathbb{E}[(z-\mathbb{E}[z])^2]$. This means that
+
+\[\E[z^2] = \E[z]^2 + \E[(z-\E)^2] = \lambda^2 + \lambda\]
+
+Note that $\lambda >> \lambda^2$ for small $\lambda$, so this dominates the cross terms. We remark that the Bernoulli distribution over $0,1$ has the same property; the hope is that the fat tails of the Poisson distribution will let us break the $k^2$ bound. We also remark that this is a natural model of a random multigraph, where $\Phi_{ij}$ is the number of edges from node $i$ to node $j$. 
+
+Let $\Phi$ be an $m\times n$ matrix such that $\Phi_{ij} \sim \text{Pois}(\lambda)$. Then
+
+\begin{align*}
+	\E[\|\Phi x\|_2^2 &= \E\left[\sum_{j=1}^m \left( \sum_{i=1}^n \phi_{ij} x_i \right)^2\right]\\
+	&= \sum_{j=1}^m \left(\sum_{i\neq i'} \E[\phi_{ij}\phi_{i'j}]x_ix_{i'} + \sum_{i=1}^n \E[\phi_{ii}^2] x_i^2 \right)\\
+	&= \sum_{j=1}^m \left( \sum_{i\neq i'} \lambda^2 x_i x_{i'} + \sum_{i=1}^n (\lambda+\lambda^2) x_i^2 \right)\\
+	&= \sum_{j=1}^m \left( \lambda^2 \left( \left(\sum_{i=1}^n x_i \right)^2 - \sum_{i=1}^n x_i^2 \right) + \sum_{i=1}^n (\lambda + \lambda^2)x_i^2 \right)\\
+	&= \sum_{j=1}^m \left( \lambda^2 \left( \sum_{i=1}^n x_i \right)^2 + \lambda \|x\|_2^2 \right)\\
+	&= m\lambda^2 \left(\sum_{i=1}^n x_i \right)^2 + m\lambda \|x\|_2^2
+\end{align*}
+
+Thus we see that this is always lower bounded by $m\lambda\|x\|_2^2$. Note that $\left(\displaystyle\sum_{i=1}^n x_i \right)^2 \le \|x\|_1^2$, and thus
+
+\begin{align*}
+	&\le m\lambda^2 \|x\|_1^2 + m\lambda\|x\|_2^2\\
+	&\le m\lambda^2 k\|x\|_2^2 + m\lambda\|x\|_2^2\\
+	&= m\lambda (1+\lambda k)\|x\|_2^2
+\end{align*}
+
+where we've used the Cauchy-Schwarz inequality to bound the $\ell_1$ norm by the $\ell_2$ norm but remembering that the other vector in the inner product only has $k$ $1's$ by the sparsity property. Thus putting everything together we have
+
+\[ \|x\|_2^2 \le \E\left[ \frac{1}{m\lambda} \|\Phi x\|_2^2 \right] \le (1+k\lambda)\|x\|_2^2\]
+
+which is the right expectation for the $(k,\epsilon)$-RIP property if we set $\lambda < \dfrac{\epsilon}{k}$. 
+	
+Now we can try to compute the variance to do a concentration bound. We'll just compute the variance assuming $m=1$, since for $m > 1$ this is just an average of independent random variables and can be dealt with at the end. The difficulty shows up not in the cross terms but rather the moments of the Poisson distribution. The $p$th moment of the Poisson distribution is given by
+
+\[\sum_{i=1}^p \lambda^i \left\{\frac{p}{i}\right\} = O(\lambda)\]
+
+where the braces denote Stirling numbers of the second kind. We see that all of the moments of the Poisson are $O\left(\lambda\right)$, but the normalization factor in front is now $\dfrac{1}{\lambda^2}$. Thus in particular the bound on the fourth moments is $O\left(\dfrac{k}{\lambda}\right)$.
+
+Summing over the number of unique random variables, the expected square of the estimator is approximately
+
+\[O\left( \frac{1}{\lambda^2}\sum_{i=1}^4 \dbinom{k}{i}\lambda^i\right) = O\left( \frac{k}{\lambda} + k^2 + k^3 \lambda + k^4 \lambda^2 \right) = O\left(\frac{k}{\lambda}\right)\]
+
+assuming $\epsilon < 1$ so that $1/\lambda > k$. Here we can see a bias-variance tradeoff: the expectation approaches $\|x\|_2^2$ as $\lambda$ decreases, but the variance increases as $\lambda$ decreases. Now each row is an independent random variable over the random Poisson samples; denote this random variable $z$. If we applied Chebyshev's inequality directly to say the variance over the average of $m$ independent copies of $z$ is $\dfrac{k}{m\lambda}$, then we would need $m = O(k/\lambda) = O(k^2\epsilon)$. Instead, we will use Chebyshev's inequality to get a much weaker bound. The probability that the estimator for one row deviates from the expectation by more than $c\sigma$ is $\dfrac{1}{c^2}$ for some quantity $c$ to be determined. The probability that this holds over all $m$ draws of $z$ is
+
+\begin{align*}
+	\text{Pr}\left[\forall \, z \, |z - \E[z]| \le c\sigma\right] &\ge \left(1 - \frac{1}{c^2}\right)^m\\
+	&\ge \exp\left(-\frac{m/c^2}{1-1/c^2}\right)\\
+	&= \exp\left(-\frac{m}{c^2-1}\right)
+\end{align*}
+
+Thus we see that $c = O(\sqrt{m})$. 
+
+Then this random variable $z$ is in the range $\left[ \E[z] \pm c\sqrt{\dfrac{k}{\lambda}}\right]$. Thus applying Chernoff bounds, we get that
+
+\begin{align*}
+	\text{Pr}\left[ \left| \frac{1}{m} \sum z  - \E[z]\right| \ge \epsilon\right] &\le 2\exp\left(-\frac{2m^2 \epsilon^2}{m 2c\sqrt{k/\lambda}}\right)\\
+	&= 2\exp\left(-\frac{2m\epsilon^2}{2c\sqrt{k/\lambda}}\right)\\
+	&= 2\exp\left(O\left(-\frac{2\sqrt{m}\epsilon^2}{2\sqrt{k/\lambda}}\right)\right)
+\end{align*}
+
+Unfortunately since $\lambda < \dfrac{\epsilon}{k}$ this puts $m$ back into the territory of $\dfrac{k}{\epsilon}$. It seems that the distribution may need to be better optimized for something like this to work. The Poisson has fat tails which distinguishes it from the Bernoulli distribution for small rate parameters, but this property also forces us to choose $c$ too large here for a better bound. This smells like some form of an uncertainty principle lurking around. 
+
+%\section{Derandomized data-dependent dimensionality reduction}
+
+%Compressed sensing seems to be a more powerful form of sketching in that instead of mapping data points to $k$ fixed bins, these data points can be mapped to potentially different subsets of $k$ coordinates within the entire $n$-dimensional space yet still retain a sensible metric between two embeddings into different $k$-subsets. In particular we propose the sketch function $H_A(x)$ which computes $\tilde{x} = \arg\min_{\hat{x}} \|\hat{x}\|_1$ such that $A\hat{x}=x$ and then keeps only the top $k$ entries of $\tilde{x}$, setting the rest to $0$. The goal is that, given a data set $X$ in advance, we construct a matrix $A$ such that every vector $x$ is close to $A\tilde{x}$ for some sparse vector $\tilde{x}$. The linear program is then computing an approximation of $\tilde{x}$, and we have the agnostic learning guarantee that this is a good $\left(O(1/\sqrt{k})\right)$ approximation. 
 
 \section{Conclusion}
-We extended results for compressed learning~\citep{Calderbank09} to apply to support vector regression and squared exponential kernels. We have identified a new explicit matrix construction that would enable compressed learning of linear regression as well.
+We extended results for compressed learning~\citep{Calderbank09} to apply to support vector regression and squared exponential kernels. We examined random graph models that might lead to explicit constructions of RIP matrices. 
 
 \bibliographystyle{plainnat}
 \bibliography{biblio}
@@ -397,5 +495,8 @@ y'-\left(A\widehat{w}_{S}\right)^{\top}\left(Ax'\right)<O(CR^{2}\epsilon)\leq T(
 \]
 as desired.
 \end{proof}
+
+%\section{Proofs of RIP Theorems}
+%\subsection{Proof of Theorem \ref{thm:berinde}}\label{pf:berinde}
 
 \end{document}
